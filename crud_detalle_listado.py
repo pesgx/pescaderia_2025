@@ -36,7 +36,7 @@ class CrudDetalleListado(tk.Toplevel):
 
         ttk.Label(self.frame_linea_uno, text="Fecha:").grid(row=2, column=0, padx=5, pady=5, sticky='e')
         self.entry_fecha = DateEntry(self.frame_linea_uno, width=12, background='darkblue', 
-                                     foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
+                                    foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
         self.entry_fecha.grid(row=2, column=1, padx=5, pady=5, sticky='w')
 
         ttk.Label(self.frame_linea_uno, text="Proveedor:").grid(row=0, column=2, padx=5, pady=5, sticky='e')
@@ -91,12 +91,18 @@ class CrudDetalleListado(tk.Toplevel):
         # Campos en frame_linea_dos (4 columnas)
         # Columna 1
         ttk.Label(self.frame_linea_dos, text="Zona:").grid(row=0, column=0, padx=5, pady=5, sticky='e')
-        self.entry_zona_id = ttk.Combobox(self.frame_linea_dos, state="readonly")
+        self.entry_zona_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_zona_id.grid(row=0, column=1, padx=5, pady=5, sticky='w')
+        self.entry_zona_id.bind('<Return>', self.buscar_zona)
+        self.entry_zona_id.bind('<KP_Enter>', self.buscar_zona)
+        self.entry_zona_id.bind('<KeyRelease>', self.filtrar_zonas)
 
         ttk.Label(self.frame_linea_dos, text="Expedidor:").grid(row=1, column=0, padx=5, pady=5, sticky='e')
-        self.entry_expedidor_id = ttk.Combobox(self.frame_linea_dos, state="readonly")
+        self.entry_expedidor_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_expedidor_id.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        self.entry_zona_id.bind('<Return>', self.buscar_expedidor)
+        self.entry_zona_id.bind('<KP_Enter>', self.buscar_expedidor)
+        self.entry_zona_id.bind('<KeyRelease>', self.filtrar_expedidores)
 
         # Columna 2
         ttk.Label(self.frame_linea_dos, text="Producción:").grid(row=0, column=2, padx=5, pady=5, sticky='e')
@@ -198,6 +204,15 @@ class CrudDetalleListado(tk.Toplevel):
         # Cargar datos de COMBOBOX
         self.cargar_proveedores()
         self.cargar_especies()
+        self.cargar_zonas()
+        self.cargar_expedidores()
+
+
+        # Eventos de teclado
+        self.entry_proveedor_id.bind('<Return>', self.buscar_proveedor)
+        self.entry_especie_id.bind('<Return>', self.buscar_especie)
+        self.entry_zona_id.bind('<Return>', self.buscar_zona)
+        self.entry_expedidor_id.bind('<Return>', self.buscar_expedidor)
 
 #############################################################################################
 #############################################################################################
@@ -336,7 +351,7 @@ class CrudDetalleListado(tk.Toplevel):
                     # Si se encuentra, actualizar el combobox
                     self.entry_especie_id.set(f"{especie[0]} - {especie[1]}")
                     # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
-                    self.entry_factura.focus_set()
+                    self.entry_compra.focus_set()
                 else:
                     # Si no se encuentra, mostrar un mensaje de error
                     messagebox.showerror("Error", f"No se encontró una especie con ID {id_especie}")
@@ -353,6 +368,139 @@ class CrudDetalleListado(tk.Toplevel):
         texto_filtro = self.entry_especie_id.get()
         self.actualizar_combobox_especies(texto_filtro)
 
+#############################################################################################
+#############################################################################################
+########################        FUNCIONES ZONAS      #####################################
+#############################################################################################
+#############################################################################################
+    def cargar_zonas(self):
+        """ Carga los datos de las zonas desde la base de datos y los muestra en el combobox. """
+        try:
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+            # Obtener todas las zonas
+            cursor.execute("SELECT id_zona, nombre_zona FROM tabla_zonas")
+            self.zonas = cursor.fetchall()
+            # Cerrar la conexión
+            conn.close()
+            # Actualizar los valores del combobox
+            self.actualizar_combobox_zonas()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar las zonas: {str(e)}")
+
+    def actualizar_combobox_zonas(self, filtro=""):
+        """ Actualiza los valores del combobox de zonas, aplicando un filtro si se proporciona. """
+        valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.zonas
+                            if filtro.lower() in nombre.lower() or filtro in str(id_)]
+        self.entry_zona_id['values'] = valores_filtrados
+
+    def buscar_zona(self, event):
+        """ Busca una zona por ID cuando se presiona Enter o Enter del teclado numérico.
+        Si se encuentra, completa el combobox y pasa al siguiente campo.
+        
+        Args:
+            event: El evento de teclado que activó esta función.
+        """
+        entrada = self.entry_zona_id.get()
+        # Verificar si la entrada es un número
+        if entrada.isdigit():
+            id_zona = int(entrada)
+            
+            try:
+                # Conectar a la base de datos
+                conn = sqlite3.connect('pescaderia.db')
+                cursor = conn.cursor()
+                # Buscar la zona
+                cursor.execute("SELECT id_zona, nombre_zona FROM tabla_zonas WHERE id_zona = ?", (id_zona,))
+                zona = cursor.fetchone()
+                # Cerrar la conexión
+                conn.close()
+                if zona:
+                    # Si se encuentra, actualizar el combobox
+                    self.entry_zona_id.set(f"{zona[0]} - {zona[1]}")
+                    # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
+                    self.entry_expedidor_id.focus_set()
+                else:
+                    # Si no se encuentra, mostrar un mensaje de error
+                    messagebox.showerror("Error", f"No se encontró una zona con ID {id_zona}")
+            except sqlite3.Error as e:
+                messagebox.showerror("Error de Base de Datos", f"No se pudo buscar la zona: {str(e)}")
+        else:
+            # Si la entrada no es un número, no hacer nada
+            pass
+
+    def filtrar_zonas(self, event):
+        """ Filtra las zonas en el combobox según el texto introducido. """
+        texto_filtro = self.entry_zona_id.get()
+        self.actualizar_combobox_zonas(texto_filtro)
+
+#############################################################################################
+#############################################################################################
+########################        FUNCIONES EXPEDIDORES      #####################################
+#############################################################################################
+#############################################################################################
+    def cargar_expedidores(self):
+        """ Carga los datos de los expedidores desde la base de datos y los muestra en el combobox. """
+        try:
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+            # Obtener todos los expedidores
+            cursor.execute("SELECT id_expedidor, nombre_expedidor FROM tabla_expedidores")
+            self.expedidores = cursor.fetchall()
+            # Cerrar la conexión
+            conn.close()
+            # Actualizar los valores del combobox
+            self.actualizar_combobox_expedidores()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar los expedidores: {str(e)}")
+
+    def actualizar_combobox_expedidores(self, filtro=""):
+        """ Actualiza los valores del combobox de expedidores, aplicando un filtro si se proporciona. """
+        valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.expedidores
+                            if filtro.lower() in nombre.lower() or filtro in str(id_)]
+        self.entry_expedidor_id['values'] = valores_filtrados
+
+    def buscar_expedidor(self, event):
+        """ Busca un expedidor por ID cuando se presiona Enter o Enter del teclado numérico.
+        Si se encuentra, completa el combobox y pasa al siguiente campo.
+        
+        Args:
+            event: El evento de teclado que activó esta función.
+        """
+        entrada = self.entry_expedidor_id.get()
+        # Verificar si la entrada es un número
+        if entrada.isdigit():
+            id_expedidor = int(entrada)
+            
+            try:
+                # Conectar a la base de datos
+                conn = sqlite3.connect('pescaderia.db')
+                cursor = conn.cursor()
+                # Buscar el expedidor
+                cursor.execute("SELECT id_expedidor, nombre_expedidor FROM tabla_expedidores WHERE id_expedidor = ?", (id_expedidor,))
+                expedidor = cursor.fetchone()
+                # Cerrar la conexión
+                conn.close()
+                if expedidor:
+                    # Si se encuentra, actualizar el combobox
+                    self.entry_expedidor_id.set(f"{expedidor[0]} - {expedidor[1]}")
+                    # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
+                    self.entry_produccion_id.focus_set()
+                else:
+                    # Si no se encuentra, mostrar un mensaje de error
+                    messagebox.showerror("Error", f"No se encontró un expedidor con ID {id_expedidor}")
+            except sqlite3.Error as e:
+                messagebox.showerror("Error de Base de Datos", f"No se pudo buscar el expedidor: {str(e)}")
+        else:
+            # Si la entrada no es un número, no hacer nada
+            pass
+
+    def filtrar_expedidores(self, event):
+        """ Filtra los expedidores en el combobox según el texto introducido. """
+        texto_filtro = self.entry_expedidor_id.get()
+        self.actualizar_combobox_expedidores(texto_filtro)
 if __name__ == "__main__":
     root = tk.Tk()
     app = CrudDetalleListado(root)
