@@ -100,9 +100,9 @@ class CrudDetalleListado(tk.Toplevel):
         ttk.Label(self.frame_linea_dos, text="Expedidor:").grid(row=1, column=0, padx=5, pady=5, sticky='e')
         self.entry_expedidor_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_expedidor_id.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-        self.entry_zona_id.bind('<Return>', self.buscar_expedidor)
-        self.entry_zona_id.bind('<KP_Enter>', self.buscar_expedidor)
-        self.entry_zona_id.bind('<KeyRelease>', self.filtrar_expedidores)
+        self.entry_expedidor_id.bind('<Return>', self.buscar_expedidor)
+        self.entry_expedidor_id.bind('<KP_Enter>', self.buscar_expedidor)
+        self.entry_expedidor_id.bind('<KeyRelease>', self.filtrar_expedidores)
 
         # Columna 2
         ttk.Label(self.frame_linea_dos, text="Producción:").grid(row=0, column=2, padx=5, pady=5, sticky='e')
