@@ -1,3 +1,7 @@
+'''
+Sistema de Gestión de Pescaderías
+
+'''
 import tkinter as tk
 from login import Login
 from conexion_db import crear_tablas
