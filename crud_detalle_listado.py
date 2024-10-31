@@ -3,7 +3,6 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import DateEntry
 import sqlite3
-from funciones_cbx_proveedor import cargar_proveedores,actualizar_combobox_proveedores,buscar_proveedor,filtrar_proveedores
 
 class CrudDetalleListado(tk.Toplevel):
     def __init__(self, master):
@@ -53,8 +52,11 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_factura.grid(row=1, column=3, padx=5, pady=5, sticky='w')
 
         ttk.Label(self.frame_linea_uno, text="Especie:").grid(row=2, column=2, padx=5, pady=5, sticky='e')
-        self.entry_especie_id = ttk.Combobox(self.frame_linea_uno, state="readonly")
+        self.entry_especie_id = ttk.Combobox(self.frame_linea_uno)
         self.entry_especie_id.grid(row=2, column=3, padx=5, pady=5, sticky='w')
+        self.entry_especie_id.bind('<Return>', self.buscar_especie)
+        self.entry_especie_id.bind('<KP_Enter>', self.buscar_especie)
+        self.entry_especie_id.bind('<KeyRelease>', self.filtrar_especies)
 
         # Columna 3
         ttk.Label(self.frame_linea_uno, text="Compra (€):").grid(row=0, column=4, padx=5, pady=5, sticky='e')
@@ -193,84 +195,163 @@ class CrudDetalleListado(tk.Toplevel):
         self.tree.configure(yscrollcommand=scrollbar.set)
         self.tree.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        # Cargar datos de proveedores
+        # Cargar datos de COMBOBOX
         self.cargar_proveedores()
+        self.cargar_especies()
 
+#############################################################################################
+#############################################################################################
+########################        FUNCIONES PROVEEDORES     #####################################
+#############################################################################################
+#############################################################################################
+    def cargar_proveedores(self):
+        """
+        Carga los datos de los proveedores desde la base de datos y los muestra en el combobox.
+        """
+        try:
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
 
-    # def cargar_proveedores(self):
-    #     """
-    #     Carga los datos de los proveedores desde la base de datos y los muestra en el combobox.
-    #     """
-    #     try:
-    #         # Conectar a la base de datos
-    #         conn = sqlite3.connect('pescaderia.db')
-    #         cursor = conn.cursor()
+            # Obtener todos los proveedores
+            cursor.execute("SELECT id_proveedor, nombre_proveedor FROM tabla_proveedores")
+            self.proveedores = cursor.fetchall()
 
-    #         # Obtener todos los proveedores
-    #         cursor.execute("SELECT id_proveedor, nombre_proveedor FROM tabla_proveedores")
-    #         self.proveedores = cursor.fetchall()
+            # Cerrar la conexión
+            conn.close()
 
-    #         # Cerrar la conexión
-    #         conn.close()
+            # Actualizar los valores del combobox
+            self.actualizar_combobox_proveedores()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar los proveedores: {str(e)}")
 
-    #         # Actualizar los valores del combobox
-    #         self.actualizar_combobox_proveedores()
-    #     except sqlite3.Error as e:
-    #         messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar los proveedores: {str(e)}")
+    def actualizar_combobox_proveedores(self, filtro=""):
+        """
+        Actualiza los valores del combobox de proveedores, aplicando un filtro si se proporciona.
+        """
+        valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.proveedores 
+                            if filtro.lower() in nombre.lower() or filtro in str(id_)]
+        self.entry_proveedor_id['values'] = valores_filtrados
 
-    # def actualizar_combobox_proveedores(self, filtro=""):
-    #     """
-    #     Actualiza los valores del combobox de proveedores, aplicando un filtro si se proporciona.
-    #     """
-    #     valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.proveedores 
-    #                         if filtro.lower() in nombre.lower() or filtro in str(id_)]
-    #     self.entry_proveedor_id['values'] = valores_filtrados
-
-    # def buscar_proveedor(self, event):
-    #     """
-    #     Busca un proveedor por ID cuando se presiona Enter o Enter del teclado numérico.
-    #     Si se encuentra, completa el combobox y pasa al siguiente campo.
+    def buscar_proveedor(self, event):
+        """
+        Busca un proveedor por ID cuando se presiona Enter o Enter del teclado numérico.
+        Si se encuentra, completa el combobox y pasa al siguiente campo.
         
-    #     Args:
-    #         event: El evento de teclado que activó esta función.
-    #     """
-    #     entrada = self.entry_proveedor_id.get()
+        Args:
+            event: El evento de teclado que activó esta función.
+        """
+        entrada = self.entry_proveedor_id.get()
 
-    #     # Verificar si la entrada es un número
-    #     if entrada.isdigit():
-    #         id_proveedor = int(entrada)
+        # Verificar si la entrada es un número
+        if entrada.isdigit():
+            id_proveedor = int(entrada)
             
-    #         try:
-    #             # Conectar a la base de datos
-    #             conn = sqlite3.connect('pescaderia.db')
-    #             cursor = conn.cursor()
+            try:
+                # Conectar a la base de datos
+                conn = sqlite3.connect('pescaderia.db')
+                cursor = conn.cursor()
 
-    #             # Buscar el proveedor
-    #             cursor.execute("SELECT id_proveedor, nombre_proveedor FROM tabla_proveedores WHERE id_proveedor = ?", (id_proveedor,))
-    #             proveedor = cursor.fetchone()
+                # Buscar el proveedor
+                cursor.execute("SELECT id_proveedor, nombre_proveedor FROM tabla_proveedores WHERE id_proveedor = ?", (id_proveedor,))
+                proveedor = cursor.fetchone()
 
-    #             # Cerrar la conexión
-    #             conn.close()
+                # Cerrar la conexión
+                conn.close()
 
-    #             if proveedor:
-    #                 # Si se encuentra, actualizar el combobox
-    #                 self.entry_proveedor_id.set(f"{proveedor[0]} - {proveedor[1]}")
-    #                 # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
-    #                 self.entry_factura.focus_set()
-    #             else:
-    #                 # Si no se encuentra, mostrar un mensaje de error
-    #                 messagebox.showerror("Error", f"No se encontró un proveedor con ID {id_proveedor}")
-    #         except sqlite3.Error as e:
-    #             messagebox.showerror("Error de Base de Datos", f"No se pudo buscar el proveedor: {str(e)}")
-    #     else:
-    #         # Si la entrada no es un número, no hacer nada
-    #         pass
-    # def filtrar_proveedores(self, event):
-    #     """
-    #     Filtra los proveedores en el combobox según el texto introducido.
-    #     """
-    #     texto_filtro = self.entry_proveedor_id.get()
-    #     self.actualizar_combobox_proveedores(texto_filtro)
+                if proveedor:
+                    # Si se encuentra, actualizar el combobox
+                    self.entry_proveedor_id.set(f"{proveedor[0]} - {proveedor[1]}")
+                    # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
+                    self.entry_factura.focus_set()
+                else:
+                    # Si no se encuentra, mostrar un mensaje de error
+                    messagebox.showerror("Error", f"No se encontró un proveedor con ID {id_proveedor}")
+            except sqlite3.Error as e:
+                messagebox.showerror("Error de Base de Datos", f"No se pudo buscar el proveedor: {str(e)}")
+        else:
+            # Si la entrada no es un número, no hacer nada
+            pass
+    def filtrar_proveedores(self, event):
+        """
+        Filtra los proveedores en el combobox según el texto introducido.
+        """
+        texto_filtro = self.entry_proveedor_id.get()
+        self.actualizar_combobox_proveedores(texto_filtro)
+
+#############################################################################################
+#############################################################################################
+########################        FUNCIONES ESPECIES      #####################################
+#############################################################################################
+#############################################################################################
+    def cargar_especies(self):
+        """
+        Carga los datos de las especies desde la base de datos y los muestra en el combobox. 
+        """
+        try:
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+            # Obtener todas las especies
+            cursor.execute("SELECT id_especie, nombre_especie FROM tabla_especies")
+            self.especies = cursor.fetchall()
+            # Cerrar la conexión
+            conn.close()
+            # Actualizar los valores del combobox
+            self.actualizar_combobox_especies()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar las especies: {str(e)}")
+
+    def actualizar_combobox_especies(self, filtro=""):
+        """
+        Actualiza los valores del combobox de especies, aplicando un filtro si se proporciona. 
+        """
+        valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.especies
+                            if filtro.lower() in nombre.lower() or filtro in str(id_)]
+        self.entry_especie_id['values'] = valores_filtrados
+
+    def buscar_especie(self, event):
+        """
+        Busca una especie por ID cuando se presiona Enter o Enter del teclado numérico.
+        Si se encuentra, completa el combobox y pasa al siguiente campo.
+        
+        Args:
+            event: El evento de teclado que activó esta función.
+        """
+        entrada = self.entry_especie_id.get()
+        # Verificar si la entrada es un número
+        if entrada.isdigit():
+            id_especie = int(entrada)
+            
+            try:
+                # Conectar a la base de datos
+                conn = sqlite3.connect('pescaderia.db')
+                cursor = conn.cursor()
+                # Buscar la especie
+                cursor.execute("SELECT id_especie, nombre_especie FROM tabla_especies WHERE id_especie = ?", (id_especie,))
+                especie = cursor.fetchone()
+                # Cerrar la conexión
+                conn.close()
+                if especie:
+                    # Si se encuentra, actualizar el combobox
+                    self.entry_especie_id.set(f"{especie[0]} - {especie[1]}")
+                    # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
+                    self.entry_factura.focus_set()
+                else:
+                    # Si no se encuentra, mostrar un mensaje de error
+                    messagebox.showerror("Error", f"No se encontró una especie con ID {id_especie}")
+            except sqlite3.Error as e:
+                messagebox.showerror("Error de Base de Datos", f"No se pudo buscar la especie: {str(e)}")
+        else:
+            # Si la entrada no es un número, no hacer nada
+            pass
+
+    def filtrar_especies(self, event):
+        """
+        Filtra las especies en el combobox según el texto introducido. 
+        """
+        texto_filtro = self.entry_especie_id.get()
+        self.actualizar_combobox_especies(texto_filtro)
 
 if __name__ == "__main__":
     root = tk.Tk()

@@ -1,18 +1,6 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
-from tkcalendar import DateEntry
 import sqlite3
+from tkinter import messagebox
 
-'''
-Esta es la configuracion del combobox entry_proveedor_id en el modulo crud_detalle_listado.py.;
-        ttk.Label(self.frame_linea_uno, text="Proveedor:").grid(row=0, column=2, padx=5, pady=5, sticky='e')
-        self.entry_proveedor_id = ttk.Combobox(self.frame_linea_uno)
-        self.entry_proveedor_id.grid(row=0, column=3, padx=5, pady=5, sticky='w')
-        self.entry_proveedor_id.bind('<Return>', self.buscar_proveedor)
-        self.entry_proveedor_id.bind('<KP_Enter>', self.buscar_proveedor)
-        self.entry_proveedor_id.bind('<KeyRelease>', self.filtrar_proveedores)
-'''
 def cargar_proveedores(self):
     """
     Carga los datos de los proveedores desde la base de datos y los muestra en el combobox.
@@ -21,14 +9,11 @@ def cargar_proveedores(self):
         # Conectar a la base de datos
         conn = sqlite3.connect('pescaderia.db')
         cursor = conn.cursor()
-
         # Obtener todos los proveedores
         cursor.execute("SELECT id_proveedor, nombre_proveedor FROM tabla_proveedores")
         self.proveedores = cursor.fetchall()
-
         # Cerrar la conexión
         conn.close()
-
         # Actualizar los valores del combobox
         self.actualizar_combobox_proveedores()
     except sqlite3.Error as e:
@@ -60,14 +45,11 @@ def buscar_proveedor(self, event):
             # Conectar a la base de datos
             conn = sqlite3.connect('pescaderia.db')
             cursor = conn.cursor()
-
             # Buscar el proveedor
             cursor.execute("SELECT id_proveedor, nombre_proveedor FROM tabla_proveedores WHERE id_proveedor = ?", (id_proveedor,))
             proveedor = cursor.fetchone()
-
             # Cerrar la conexión
             conn.close()
-
             if proveedor:
                 # Si se encuentra, actualizar el combobox
                 self.entry_proveedor_id.set(f"{proveedor[0]} - {proveedor[1]}")
