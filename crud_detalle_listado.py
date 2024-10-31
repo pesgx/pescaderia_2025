@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import DateEntry
 import sqlite3
-from funciones_cbx_proveedor import FuncionesCbxProveedor
+from funciones_cbx_proveedor import cargar_proveedores,actualizar_combobox_proveedores,buscar_proveedor,filtrar_proveedores
 
 class CrudDetalleListado(tk.Toplevel):
     def __init__(self, master):
@@ -196,6 +196,7 @@ class CrudDetalleListado(tk.Toplevel):
         # Cargar datos de proveedores
         self.cargar_proveedores()
 
+
     # def cargar_proveedores(self):
     #     """
     #     Carga los datos de los proveedores desde la base de datos y los muestra en el combobox.
@@ -222,7 +223,7 @@ class CrudDetalleListado(tk.Toplevel):
     #     Actualiza los valores del combobox de proveedores, aplicando un filtro si se proporciona.
     #     """
     #     valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.proveedores 
-    #                          if filtro.lower() in nombre.lower() or filtro in str(id_)]
+    #                         if filtro.lower() in nombre.lower() or filtro in str(id_)]
     #     self.entry_proveedor_id['values'] = valores_filtrados
 
     # def buscar_proveedor(self, event):
