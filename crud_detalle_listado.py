@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import DateEntry
+from datetime import datetime
 import sqlite3
 
 class CrudDetalleListado(tk.Toplevel):
@@ -170,19 +171,33 @@ class CrudDetalleListado(tk.Toplevel):
         # Frame para botones CRUD
         self.frame_botones = ttk.LabelFrame(self.main_frame, text="Operaciones")
         self.frame_botones.pack(fill=tk.X, padx=5, pady=5)
+        def anadir_registro_wrapper():
+            self.anadir_registro()
+            self.limpiar_campos()
 
+        def actualizar_registro_wrapper():
+            self.actualizar_registro()
+            self.limpiar_campos()
+
+        def eliminar_registro_wrapper():
+            self.eliminar_registro()
+            self.limpiar_campos()
         # Botones CRUD
         self.btn_anadir = ttk.Button(self.frame_botones, text="AÑADIR")
         self.btn_anadir.grid(row=0, column=0, padx=5, pady=5)
+        self.btn_anadir.config(command=anadir_registro_wrapper)
 
         self.btn_actualizar = ttk.Button(self.frame_botones, text="ACTUALIZAR")
         self.btn_actualizar.grid(row=0, column=1, padx=5, pady=5)
+        self.btn_actualizar.config(command=actualizar_registro_wrapper)
 
         self.btn_eliminar = ttk.Button(self.frame_botones, text="ELIMINAR")
         self.btn_eliminar.grid(row=0, column=2, padx=5, pady=5)
+        self.btn_eliminar.config(command=eliminar_registro_wrapper)
 
         self.btn_salir = ttk.Button(self.frame_botones, text="SALIR")
         self.btn_salir.grid(row=0, column=3, padx=5, pady=5)
+        self.btn_salir.config(command=self.master.destroy)
 
         # Frame para el Treeview
         self.frame_treeview = ttk.LabelFrame(self.main_frame, text="Listado de Registros")
@@ -215,7 +230,7 @@ class CrudDetalleListado(tk.Toplevel):
 
         self.tree.configure(yscrollcommand=scrollbar.set)
         self.tree.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-
+        self.tree.bind('<<TreeviewSelect>>', self.seleccionar_registro)       
         # Cargar datos de COMBOBOX
         self.cargar_proveedores()
         self.cargar_especies()
@@ -226,8 +241,8 @@ class CrudDetalleListado(tk.Toplevel):
         self.cargar_metodos()
         self.cargar_presentaciones()
         self.cargar_barcos()
-
-
+        # Cargar los registros iniciales
+        self.cargar_registros()
         # Eventos de teclado
         self.entry_proveedor_id.bind('<Return>', self.buscar_proveedor)
         self.entry_especie_id.bind('<Return>', self.buscar_especie)
@@ -238,7 +253,343 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_metodo_id.bind('<Return>',self.buscar_metodo)
         self.entry_presentacion_id.bind('<Return>',self.buscar_presentacion)
         self.entry_barco_id.bind('<Return>',self.buscar_barco)
+#############################################################################################
+#############################################################################################
+########################        OTROS METODOS     ###########################################
+#############################################################################################
+#############################################################################################
+    def limpiar_campos(self):
+            """
+            Limpia todos los campos del formulario.
+            """
+            self.entry_id_detalle.delete(0, tk.END)
+            self.entry_listado_id.delete(0, tk.END)
+            self.entry_fecha.set_date(None)
+            self.entry_proveedor_id.set('')
+            self.entry_factura.delete(0, tk.END)
+            self.entry_especie_id.set('')
+            self.entry_compra.delete(0, tk.END)
+            self.entry_cantidad.delete(0, tk.END)
+            self.entry_iva.delete(0, tk.END)
+            self.entry_costo.delete(0, tk.END)
+            self.entry_porcentaje.delete(0, tk.END)
+            self.entry_beneficio.delete(0, tk.END)
+            self.entry_pvp.delete(0, tk.END)
+            self.entry_zona_id.set('')
+            self.entry_expedidor_id.set('')
+            self.entry_produccion_id.set('')
+            self.entry_arte_id.set('')
+            self.entry_metodo_id.set('')
+            self.entry_presentacion_id.set('')
+            self.entry_barco_id.set('')
+            self.entry_descongelado.state(['!selected'])
+            self.entry_lote_ext.delete(0, tk.END)
+            self.entry_lote_int.delete(0, tk.END)
+            self.entry_nota_ext.delete(0, tk.END)
+            self.entry_nota_int.delete(0, tk.END)
+            self.entry_reg_congelado.state(['!selected'])
 
+    def seleccionar_registro(self, event):
+        """
+        Completa los campos del formulario con los datos del registro seleccionado en el treeview.
+        """
+        # Obtener el ítem seleccionado
+        seleccion = self.tree.selection()
+        if not seleccion:
+            return
+
+        # Obtener los valores del ítem seleccionado
+        valores = self.tree.item(seleccion)['values']
+
+        # Limpiar los campos actuales
+        self.limpiar_campos()
+
+        # Obtener los datos completos del registro seleccionado
+        try:
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT * FROM tabla_detalle_listado
+                WHERE id_detalle = ?
+            """, (valores[0],))
+            registro = cursor.fetchone()
+
+            if registro:
+                # Llenar los campos con los datos del registro
+                self.entry_id_detalle.insert(0, registro[0])
+                self.entry_listado_id.insert(0, registro[1])
+
+                # Manejo de diferentes formatos de fecha
+                fecha_str = registro[2]
+                try:
+                    # Intenta primero con el formato 'DD/MM/YYYY'
+                    fecha = datetime.strptime(fecha_str, '%d/%m/%Y').date()
+                except ValueError:
+                    try:
+                        # Si falla, intenta con el formato 'YYYY-MM-DD'
+                        fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                    except ValueError:
+                        # Si ambos fallan, usa la fecha actual como fallback
+                        fecha = datetime.now().date()
+                        print(f"Formato de fecha no reconocido: {fecha_str}. Usando la fecha actual.")
+
+                self.entry_fecha.set_date(fecha)
+
+                self.entry_proveedor_id.set(f"{registro[3]} - {valores[2]}")  # Asumiendo que valores[2] es el nombre del proveedor
+                self.entry_factura.insert(0, registro[4])
+                self.entry_especie_id.set(f"{registro[5]} - {valores[3]}")  # Asumiendo que valores[3] es el nombre de la especie
+                self.entry_compra.insert(0, registro[6])
+                self.entry_cantidad.insert(0, registro[7])
+                self.entry_iva.insert(0, registro[8])
+                self.entry_costo.insert(0, registro[9])
+                self.entry_porcentaje.insert(0, registro[10])
+                self.entry_beneficio.insert(0, registro[11])
+                self.entry_pvp.insert(0, registro[12])
+                self.entry_zona_id.set(registro[13])
+                self.entry_expedidor_id.set(registro[14])
+                self.entry_produccion_id.set(registro[15])
+                self.entry_arte_id.set(registro[16])
+                self.entry_metodo_id.set(registro[17])
+                self.entry_presentacion_id.set(registro[18])
+                self.entry_barco_id.set(registro[19])
+                if registro[20]:
+                    self.entry_descongelado.state(['selected'])
+                else:
+                    self.entry_descongelado.state(['!selected'])
+                self.entry_lote_ext.insert(0, registro[21])
+                self.entry_lote_int.insert(0, registro[22])
+                self.entry_nota_ext.insert(0, registro[23])
+                self.entry_nota_int.insert(0, registro[24])
+                if registro[25]:
+                    self.entry_reg_congelado.state(['selected'])
+                else:
+                    self.entry_reg_congelado.state(['!selected'])
+
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudo cargar el registro: {str(e)}")
+        finally:
+            if conn:
+                conn.close()
+
+#############################################################################################
+#############################################################################################
+########################        METODOS CRUD     #####################################
+#############################################################################################
+#############################################################################################
+    def anadir_registro(self):
+        """
+        Añade un nuevo registro a la tabla_detalle_listado.
+        """
+        try:
+            # Obtener los valores de los campos
+            valores = self.obtener_valores_campos()
+
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+
+            # Preparar la consulta SQL
+            sql = """
+            INSERT INTO tabla_detalle_listado (
+                listado_id, fecha, proveedor_id, factura, especie_id, compra, cantidad, iva, costo,
+                porcentaje, beneficio, pvp, zona_id, expedidor_id, produccion_id, arte_id, metodo_id,
+                presentacion_id, barco_id, descongelado, lote_ext, lote_int, nota_ext, nota_int, reg_congelado
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """
+
+            # Ejecutar la consulta
+            cursor.execute(sql, valores)
+            conn.commit()
+
+            messagebox.showinfo("Éxito", "Registro añadido correctamente")
+
+            # Actualizar el treeview
+            self.cargar_registros()
+
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudo añadir el registro: {str(e)}")
+        finally:
+            if conn:
+                conn.close()
+
+    def actualizar_registro(self):
+        """
+        Actualiza un registro existente en la tabla_detalle_listado.
+        """
+        try:
+            # Obtener el ID del registro seleccionado
+            seleccion = self.tree.selection()
+            if not seleccion:
+                messagebox.showwarning("Advertencia", "Por favor, seleccione un registro para actualizar")
+                return
+
+            id_detalle = self.tree.item(seleccion)['values'][0]
+
+            # Obtener los valores actualizados de los campos
+            valores = self.obtener_valores_campos()
+
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+
+            # Preparar la consulta SQL
+            sql = """
+            UPDATE tabla_detalle_listado SET
+                listado_id=?, fecha=?, proveedor_id=?, factura=?, especie_id=?, compra=?, cantidad=?,
+                iva=?, costo=?, porcentaje=?, beneficio=?, pvp=?, zona_id=?, expedidor_id=?,
+                produccion_id=?, arte_id=?, metodo_id=?, presentacion_id=?, barco_id=?, descongelado=?,
+                lote_ext=?, lote_int=?, nota_ext=?, nota_int=?, reg_congelado=?
+            WHERE id_detalle=?
+            """
+
+            # Ejecutar la consulta
+            cursor.execute(sql, valores + (id_detalle,))
+            conn.commit()
+
+            messagebox.showinfo("Éxito", "Registro actualizado correctamente")
+
+            # Actualizar el treeview
+            self.cargar_registros()
+
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudo actualizar el registro: {str(e)}")
+        finally:
+            if conn:
+                conn.close()
+
+    def eliminar_registro(self):
+        """
+        Elimina un registro existente de la tabla_detalle_listado.
+        """
+        try:
+            # Obtener el ID del registro seleccionado
+            seleccion = self.tree.selection()
+            if not seleccion:
+                messagebox.showwarning("Advertencia", "Por favor, seleccione un registro para eliminar")
+                return
+
+            id_detalle = self.tree.item(seleccion)['values'][0]
+
+            # Confirmar la eliminación
+            if not messagebox.askyesno("Confirmar", "¿Está seguro de que desea eliminar este registro?"):
+                return
+
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+
+            # Preparar la consulta SQL
+            sql = "DELETE FROM tabla_detalle_listado WHERE id_detalle=?"
+
+            # Ejecutar la consulta
+            cursor.execute(sql, (id_detalle,))
+            conn.commit()
+
+            messagebox.showinfo("Éxito", "Registro eliminado correctamente")
+
+            # Actualizar el treeview
+            self.cargar_registros()
+
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudo eliminar el registro: {str(e)}")
+        finally:
+            if conn:
+                conn.close()
+
+    def obtener_valores_campos(self):
+        """
+        Obtiene los valores de todos los campos de entrada.
+        """
+        return (
+            self.entry_listado_id.get(),
+            self.entry_fecha.get(),
+            self.entry_proveedor_id.get().split(' - ')[0],  # Asumiendo que el formato es "ID - Nombre"
+            self.entry_factura.get(),
+            self.entry_especie_id.get().split(' - ')[0],
+            self.entry_compra.get(),
+            self.entry_cantidad.get(),
+            self.entry_iva.get(),
+            self.entry_costo.get(),
+            self.entry_porcentaje.get(),
+            self.entry_beneficio.get(),
+            self.entry_pvp.get(),
+            self.entry_zona_id.get().split(' - ')[0],
+            self.entry_expedidor_id.get().split(' - ')[0],
+            self.entry_produccion_id.get().split(' - ')[0],
+            self.entry_arte_id.get().split(' - ')[0],
+            self.entry_metodo_id.get().split(' - ')[0],
+            self.entry_presentacion_id.get().split(' - ')[0],
+            self.entry_barco_id.get().split(' - ')[0],
+            1 if self.entry_descongelado.instate(['selected']) else 0,
+            self.entry_lote_ext.get(),
+            self.entry_lote_int.get(),
+            self.entry_nota_ext.get(),
+            self.entry_nota_int.get(),
+            1 if self.entry_reg_congelado.instate(['selected']) else 0
+        )
+
+    def cargar_registros(self):
+        """
+        Carga los registros de la tabla_detalle_listado en el treeview.
+        """
+        # Limpiar el treeview
+        for i in self.tree.get_children():
+            self.tree.delete(i)
+
+        try:
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+
+            # Obtener los registros
+            cursor.execute("""
+                SELECT dl.id_detalle, dl.fecha, p.nombre_proveedor, e.nombre_especie, dl.pvp, dl.nota_int
+                FROM tabla_detalle_listado dl
+                LEFT JOIN tabla_proveedores p ON dl.proveedor_id = p.id_proveedor
+                LEFT JOIN tabla_especies e ON dl.especie_id = e.id_especie
+            """)
+            registros = cursor.fetchall()
+
+            # Insertar los registros en el treeview
+            for registro in registros:
+                self.tree.insert('', 'end', values=registro)
+
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar los registros: {str(e)}")
+        finally:
+            if conn:
+                conn.close()
+
+    def limpiar_campos(self):
+            """
+            Limpia todos los campos del formulario.
+            """
+            self.entry_id_detalle.delete(0, tk.END)
+            self.entry_listado_id.delete(0, tk.END)
+            self.entry_fecha.set_date(None)
+            self.entry_proveedor_id.set('')
+            self.entry_factura.delete(0, tk.END)
+            self.entry_especie_id.set('')
+            self.entry_compra.delete(0, tk.END)
+            self.entry_cantidad.delete(0, tk.END)
+            self.entry_iva.delete(0, tk.END)
+            self.entry_costo.delete(0, tk.END)
+            self.entry_porcentaje.delete(0, tk.END)
+            self.entry_beneficio.delete(0, tk.END)
+            self.entry_pvp.delete(0, tk.END)
+            self.entry_zona_id.set('')
+            self.entry_expedidor_id.set('')
+            self.entry_produccion_id.set('')
+            self.entry_arte_id.set('')
+            self.entry_metodo_id.set('')
+            self.entry_presentacion_id.set('')
+            self.entry_barco_id.set('')
+            self.entry_descongelado.state(['!selected'])
+            self.entry_lote_ext.delete(0, tk.END)
+            self.entry_lote_int.delete(0, tk.END)
+            self.entry_nota_ext.delete(0, tk.END)
+            self.entry_nota_int.delete(0, tk.END)
+            self.entry_reg_congelado.state(['!selected'])
 #############################################################################################
 #############################################################################################
 ########################        FUNCIONES PROVEEDORES     #####################################
@@ -861,10 +1212,6 @@ class CrudDetalleListado(tk.Toplevel):
         """ Filtra los barcos en el combobox según el texto introducido. """
         texto_filtro = self.entry_barco_id.get()
         self.actualizar_combobox_barcos(texto_filtro)
-
-
-
-
 
 
 
