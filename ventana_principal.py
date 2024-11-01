@@ -28,7 +28,7 @@ class VentanaPrincipal:
         # Crear un estilo para los botones 
         estilo = ttk.Style()
         estilo.theme_use('clam') # Cambia el tema para asegurarte de que los colores se apliquen correctamente 
-        estilo.configure("TButton", background="gray99", foreground="black", font=('Arial', 12, 'bold'))
+        estilo.configure("TButton", background="snow3", foreground="black", font=('Arial', 12))
 
         # Almacenar el usuario actual
         self.usuario_actual = None
