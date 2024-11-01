@@ -290,86 +290,104 @@ class CrudDetalleListado(tk.Toplevel):
             self.entry_reg_congelado.state(['!selected'])
 
     def seleccionar_registro(self, event):
-        """
-        Completa los campos del formulario con los datos del registro seleccionado en el treeview.
-        """
-        # Obtener el ítem seleccionado
-        seleccion = self.tree.selection()
-        if not seleccion:
-            return
+            """
+            Completa los campos del formulario con los datos del registro seleccionado en el treeview.
+            """
+            # Obtener el ítem seleccionado
+            seleccion = self.tree.selection()
+            if not seleccion:
+                return
 
-        # Obtener los valores del ítem seleccionado
-        valores = self.tree.item(seleccion)['values']
+            # Obtener los valores del ítem seleccionado
+            valores = self.tree.item(seleccion)['values']
 
-        # Limpiar los campos actuales
-        self.limpiar_campos()
+            # Limpiar los campos actuales
+            self.limpiar_campos()
 
-        # Obtener los datos completos del registro seleccionado
-        try:
-            conn = sqlite3.connect('pescaderia.db')
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT * FROM tabla_detalle_listado
-                WHERE id_detalle = ?
-            """, (valores[0],))
-            registro = cursor.fetchone()
+            # Obtener los datos completos del registro seleccionado
+            try:
+                conn = sqlite3.connect('pescaderia.db')
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT dl.*, 
+                        p.nombre_proveedor, 
+                        e.nombre_especie,
+                        z.nombre_zona,
+                        ex.nombre_expedidor,
+                        pr.nombre_produccion,
+                        a.nombre_arte,
+                        m.nombre_metodo,
+                        pres.nombre_presentacion,
+                        b.nombre_barco
+                    FROM tabla_detalle_listado dl
+                    LEFT JOIN tabla_proveedores p ON dl.proveedor_id = p.id_proveedor
+                    LEFT JOIN tabla_especies e ON dl.especie_id = e.id_especie
+                    LEFT JOIN tabla_zonas z ON dl.zona_id = z.id_zona
+                    LEFT JOIN tabla_expedidores ex ON dl.expedidor_id = ex.id_expedidor
+                    LEFT JOIN tabla_producciones pr ON dl.produccion_id = pr.id_produccion
+                    LEFT JOIN tabla_artes a ON dl.arte_id = a.id_arte
+                    LEFT JOIN tabla_metodos m ON dl.metodo_id = m.id_metodo
+                    LEFT JOIN tabla_presentaciones pres ON dl.presentacion_id = pres.id_presentacion
+                    LEFT JOIN tabla_barcos b ON dl.barco_id = b.id_barco
+                    WHERE dl.id_detalle = ?
+                """, (valores[0],))
+                registro = cursor.fetchone()
 
-            if registro:
-                # Llenar los campos con los datos del registro
-                self.entry_id_detalle.insert(0, registro[0])
-                self.entry_listado_id.insert(0, registro[1])
+                if registro:
+                    # Llenar los campos con los datos del registro
+                    self.entry_id_detalle.insert(0, registro[0])
+                    self.entry_listado_id.insert(0, registro[1])
 
-                # Manejo de diferentes formatos de fecha
-                fecha_str = registro[2]
-                try:
-                    # Intenta primero con el formato 'DD/MM/YYYY'
-                    fecha = datetime.strptime(fecha_str, '%d/%m/%Y').date()
-                except ValueError:
+                    # Manejo de diferentes formatos de fecha
+                    fecha_str = registro[2]
                     try:
-                        # Si falla, intenta con el formato 'YYYY-MM-DD'
-                        fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                        fecha = datetime.strptime(fecha_str, '%d/%m/%Y').date()
                     except ValueError:
-                        # Si ambos fallan, usa la fecha actual como fallback
-                        fecha = datetime.now().date()
-                        print(f"Formato de fecha no reconocido: {fecha_str}. Usando la fecha actual.")
+                        try:
+                            fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                        except ValueError:
+                            fecha = datetime.now().date()
+                            print(f"Formato de fecha no reconocido: {fecha_str}. Usando la fecha actual.")
 
-                self.entry_fecha.set_date(fecha)
+                    self.entry_fecha.set_date(fecha)
 
-                self.entry_proveedor_id.set(f"{registro[3]} - {valores[2]}")  # Asumiendo que valores[2] es el nombre del proveedor
-                self.entry_factura.insert(0, registro[4])
-                self.entry_especie_id.set(f"{registro[5]} - {valores[3]}")  # Asumiendo que valores[3] es el nombre de la especie
-                self.entry_compra.insert(0, registro[6])
-                self.entry_cantidad.insert(0, registro[7])
-                self.entry_iva.insert(0, registro[8])
-                self.entry_costo.insert(0, registro[9])
-                self.entry_porcentaje.insert(0, registro[10])
-                self.entry_beneficio.insert(0, registro[11])
-                self.entry_pvp.insert(0, registro[12])
-                self.entry_zona_id.set(registro[13])
-                self.entry_expedidor_id.set(registro[14])
-                self.entry_produccion_id.set(registro[15])
-                self.entry_arte_id.set(registro[16])
-                self.entry_metodo_id.set(registro[17])
-                self.entry_presentacion_id.set(registro[18])
-                self.entry_barco_id.set(registro[19])
-                if registro[20]:
-                    self.entry_descongelado.state(['selected'])
-                else:
-                    self.entry_descongelado.state(['!selected'])
-                self.entry_lote_ext.insert(0, registro[21])
-                self.entry_lote_int.insert(0, registro[22])
-                self.entry_nota_ext.insert(0, registro[23])
-                self.entry_nota_int.insert(0, registro[24])
-                if registro[25]:
-                    self.entry_reg_congelado.state(['selected'])
-                else:
-                    self.entry_reg_congelado.state(['!selected'])
+                    # Configurar comboboxes con ID y nombre
+                    self.entry_proveedor_id.set(f"{registro[3]} - {registro[26]}")
+                    self.entry_factura.insert(0, registro[4])
+                    self.entry_especie_id.set(f"{registro[5]} - {registro[27]}")
+                    self.entry_compra.insert(0, registro[6])
+                    self.entry_cantidad.insert(0, registro[7])
+                    self.entry_iva.insert(0, registro[8])
+                    self.entry_costo.insert(0, registro[9])
+                    self.entry_porcentaje.insert(0, registro[10])
+                    self.entry_beneficio.insert(0, registro[11])
+                    self.entry_pvp.insert(0, registro[12])
+                    self.entry_zona_id.set(f"{registro[13]} - {registro[28]}")
+                    self.entry_expedidor_id.set(f"{registro[14]} - {registro[29]}")
+                    self.entry_produccion_id.set(f"{registro[15]} - {registro[30]}")
+                    self.entry_arte_id.set(f"{registro[16]} - {registro[31]}")
+                    self.entry_metodo_id.set(f"{registro[17]} - {registro[32]}")
+                    self.entry_presentacion_id.set(f"{registro[18]} - {registro[33]}")
+                    self.entry_barco_id.set(f"{registro[19]} - {registro[34]}")
 
-        except sqlite3.Error as e:
-            messagebox.showerror("Error de Base de Datos", f"No se pudo cargar el registro: {str(e)}")
-        finally:
-            if conn:
-                conn.close()
+                    if registro[20]:
+                        self.entry_descongelado.state(['selected'])
+                    else:
+                        self.entry_descongelado.state(['!selected'])
+                    self.entry_lote_ext.insert(0, registro[21])
+                    self.entry_lote_int.insert(0, registro[22])
+                    self.entry_nota_ext.insert(0, registro[23])
+                    self.entry_nota_int.insert(0, registro[24])
+                    if registro[25]:
+                        self.entry_reg_congelado.state(['selected'])
+                    else:
+                        self.entry_reg_congelado.state(['!selected'])
+
+            except sqlite3.Error as e:
+                messagebox.showerror("Error de Base de Datos", f"No se pudo cargar el registro: {str(e)}")
+            finally:
+                if conn:
+                    conn.close()
 
 #############################################################################################
 #############################################################################################
