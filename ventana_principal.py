@@ -23,7 +23,12 @@ class VentanaPrincipal:
     def __init__(self, master=None):
         self.master = master or tk.Tk()
         self.master.title("Sistema de Gestión de Pescaderías")
-        self.master.geometry("1000x700")
+        self.master.geometry("1000x800")
+        
+        # Crear un estilo para los botones 
+        estilo = ttk.Style()
+        estilo.theme_use('clam') # Cambia el tema para asegurarte de que los colores se apliquen correctamente 
+        estilo.configure("TButton", background="gray99", foreground="black", font=('Arial', 12, 'bold'))
 
         # Almacenar el usuario actual
         self.usuario_actual = None
@@ -52,41 +57,41 @@ class VentanaPrincipal:
 
         # Crear botones individualmente y distribuirlos en 3 filas
         self.btn_artes = ttk.Button(self.frame_botones, text="Gestionar Artes", command=self.abrir_crud_artes)
-        self.btn_artes.grid(row=0, column=0, padx=10, pady=5)
+        self.btn_artes.grid(row=0, column=0, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         self.btn_especies = ttk.Button(self.frame_botones, text="Gestionar Especies", command=self.abrir_crud_especies)
-        self.btn_especies.grid(row=0, column=1, padx=10, pady=5)
+        self.btn_especies.grid(row=0, column=1, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         self.btn_expedidores = ttk.Button(self.frame_botones, text="Gestionar Expedidores", command=self.abrir_crud_expedidores)
-        self.btn_expedidores.grid(row=0, column=2, padx=10, pady=5)
+        self.btn_expedidores.grid(row=0, column=2, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         self.btn_metodos = ttk.Button(self.frame_botones, text="Gestionar Métodos", command=self.abrir_crud_metodos)
-        self.btn_metodos.grid(row=1, column=0, padx=10, pady=5)
+        self.btn_metodos.grid(row=1, column=0, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         self.btn_producciones = ttk.Button(self.frame_botones, text="Gestionar Producciones", command=self.abrir_crud_producciones)
-        self.btn_producciones.grid(row=1, column=1, padx=10, pady=5)
+        self.btn_producciones.grid(row=1, column=1, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         self.btn_proveedores = ttk.Button(self.frame_botones, text="Gestionar Proveedores", command=self.abrir_crud_proveedores)
-        self.btn_proveedores.grid(row=1, column=2, padx=10, pady=5)
+        self.btn_proveedores.grid(row=1, column=2, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         self.btn_zonas = ttk.Button(self.frame_botones, text="Gestionar Zonas", command=self.abrir_crud_zonas)
-        self.btn_zonas.grid(row=2, column=0, padx=10, pady=5)
+        self.btn_zonas.grid(row=2, column=0, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         self.btn_barcos = ttk.Button(self.frame_botones, text="Gestionar Barcos", command=self.abrir_crud_barcos)
-        self.btn_barcos.grid(row=2, column=1, padx=10, pady=5)
+        self.btn_barcos.grid(row=2, column=1, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         self.btn_registros = ttk.Button(self.frame_botones, text="Gestionar Registros", command=self.abrir_crud_detalle_listado)
-        self.btn_registros.grid(row=2, column=2, padx=10, pady=5)
+        self.btn_registros.grid(row=2, column=2, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         self.btn_presentaciones = ttk.Button(self.frame_botones, text="Gestionar Presentaciones", command=self.abrir_crud_presentaciones)
-        self.btn_presentaciones.grid(row=3, column=0, padx=10, pady=5)
+        self.btn_presentaciones.grid(row=3, column=0, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         self.btn_familias = ttk.Button(self.frame_botones, text="Gestionar Familias", command=self.abrir_crud_familias)
-        self.btn_familias.grid(row=3, column=1, padx=10, pady=5)
+        self.btn_familias.grid(row=3, column=1, padx=10, pady=5, sticky='nsew', ipadx=10, ipady=10)
 
         # Añadir botón de salir
-        self.btn_salir = ttk.Button(self.frame_principal, text="Salir", command=self.salir)
-        self.btn_salir.pack(pady=20)
+        self.btn_salir = ttk.Button(self.frame_botones, text="Salir", command=self.salir)
+        self.btn_salir.grid(row=4, column=0,columnspan=3, padx=5, pady=5, sticky='nsew', ipadx=5, ipady=5)
 
         # Crear menú
         self.crear_menu()
