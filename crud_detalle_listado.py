@@ -10,7 +10,7 @@ class CrudDetalleListado(tk.Toplevel):
         
         # Configuración básica de la ventana
         self.title("Gestión de Detalle de Listado")
-        self.geometry("1200x800")
+        self.geometry("1200x850")
 
         # Frame principal
         self.main_frame = ttk.Frame(self)
@@ -106,26 +106,41 @@ class CrudDetalleListado(tk.Toplevel):
 
         # Columna 2
         ttk.Label(self.frame_linea_dos, text="Producción:").grid(row=0, column=2, padx=5, pady=5, sticky='e')
-        self.entry_produccion_id = ttk.Combobox(self.frame_linea_dos, state="readonly")
+        self.entry_produccion_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_produccion_id.grid(row=0, column=3, padx=5, pady=5, sticky='w')
+        self.entry_produccion_id.bind('<Return>', self.buscar_produccion)
+        self.entry_produccion_id.bind('<KP_Enter>', self.buscar_produccion)
+        self.entry_produccion_id.bind('<KeyRelease>', self.filtrar_producciones)
 
         ttk.Label(self.frame_linea_dos, text="Arte:").grid(row=1, column=2, padx=5, pady=5, sticky='e')
-        self.entry_arte_id = ttk.Combobox(self.frame_linea_dos, state="readonly")
+        self.entry_arte_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_arte_id.grid(row=1, column=3, padx=5, pady=5, sticky='w')
+        self.entry_arte_id.bind('<Return>', self.buscar_arte)
+        self.entry_arte_id.bind('<KP_Enter>', self.buscar_arte)
+        self.entry_arte_id.bind('<KeyRelease>', self.filtrar_artes)
 
         # Columna 3
         ttk.Label(self.frame_linea_dos, text="Método:").grid(row=0, column=4, padx=5, pady=5, sticky='e')
-        self.entry_metodo_id = ttk.Combobox(self.frame_linea_dos, state="readonly")
+        self.entry_metodo_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_metodo_id.grid(row=0, column=5, padx=5, pady=5, sticky='w')
+        self.entry_metodo_id.bind('<Return>', self.buscar_metodo)
+        self.entry_metodo_id.bind('<KP_Enter>', self.buscar_metodo)
+        self.entry_metodo_id.bind('<KeyRelease>', self.filtrar_metodos)
 
         ttk.Label(self.frame_linea_dos, text="Presentación:").grid(row=1, column=4, padx=5, pady=5, sticky='e')
-        self.entry_presentacion_id = ttk.Combobox(self.frame_linea_dos, state="readonly")
+        self.entry_presentacion_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_presentacion_id.grid(row=1, column=5, padx=5, pady=5, sticky='w')
+        self.entry_presentacion_id.bind('<Return>', self.buscar_presentacion)
+        self.entry_presentacion_id.bind('<KP_Enter>', self.buscar_presentacion)
+        self.entry_presentacion_id.bind('<KeyRelease>', self.filtrar_presentaciones)
 
         # Columna 4
         ttk.Label(self.frame_linea_dos, text="Barco:").grid(row=0, column=6, padx=5, pady=5, sticky='e')
-        self.entry_barco_id = ttk.Combobox(self.frame_linea_dos, state="readonly")
+        self.entry_barco_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_barco_id.grid(row=0, column=7, padx=5, pady=5, sticky='w')
+        self.entry_barco_id.bind('<Return>', self.buscar_barco)
+        self.entry_barco_id.bind('<KP_Enter>', self.buscar_barco)
+        self.entry_barco_id.bind('<KeyRelease>', self.filtrar_barcos)
 
         ttk.Label(self.frame_linea_dos, text="Descongelado:").grid(row=1, column=6, padx=5, pady=5, sticky='e')
         self.entry_descongelado = ttk.Checkbutton(self.frame_linea_dos)
@@ -206,6 +221,11 @@ class CrudDetalleListado(tk.Toplevel):
         self.cargar_especies()
         self.cargar_zonas()
         self.cargar_expedidores()
+        self.cargar_producciones()
+        self.cargar_artes()
+        self.cargar_metodos()
+        self.cargar_presentaciones()
+        self.cargar_barcos()
 
 
         # Eventos de teclado
@@ -213,6 +233,11 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_especie_id.bind('<Return>', self.buscar_especie)
         self.entry_zona_id.bind('<Return>', self.buscar_zona)
         self.entry_expedidor_id.bind('<Return>', self.buscar_expedidor)
+        self.entry_produccion_id.bind('<Return>', self.buscar_produccion)
+        self.entry_arte_id.bind('<Return>',self.buscar_arte)
+        self.entry_metodo_id.bind('<Return>',self.buscar_metodo)
+        self.entry_presentacion_id.bind('<Return>',self.buscar_presentacion)
+        self.entry_barco_id.bind('<Return>',self.buscar_barco)
 
 #############################################################################################
 #############################################################################################
@@ -501,6 +526,348 @@ class CrudDetalleListado(tk.Toplevel):
         """ Filtra los expedidores en el combobox según el texto introducido. """
         texto_filtro = self.entry_expedidor_id.get()
         self.actualizar_combobox_expedidores(texto_filtro)
+
+#############################################################################################
+#############################################################################################
+########################        FUNCIONES PRODUCCIONES      #################################
+#############################################################################################
+#############################################################################################
+    def cargar_producciones(self):
+        """ Carga los datos de las producciones desde la base de datos y los muestra en el combobox. """
+        try:
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+            # Obtener todas las producciones
+            cursor.execute("SELECT id_produccion, nombre_produccion FROM tabla_producciones")
+            self.producciones = cursor.fetchall()
+            # Cerrar la conexión
+            conn.close()
+            # Actualizar los valores del combobox
+            self.actualizar_combobox_producciones()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar las producciones: {str(e)}")
+
+    def actualizar_combobox_producciones(self, filtro=""):
+        """ Actualiza los valores del combobox de producciones, aplicando un filtro si se proporciona. """
+        valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.producciones
+                            if filtro.lower() in nombre.lower() or filtro in str(id_)]
+        self.entry_produccion_id['values'] = valores_filtrados
+
+    def buscar_produccion(self, event):
+        """ Busca una producción por ID cuando se presiona Enter o Enter del teclado numérico.
+        Si se encuentra, completa el combobox y pasa al siguiente campo.
+        
+        Args:
+            event: El evento de teclado que activó esta función.
+        """
+        entrada = self.entry_produccion_id.get()
+        # Verificar si la entrada es un número
+        if entrada.isdigit():
+            id_produccion = int(entrada)
+            
+            try:
+                # Conectar a la base de datos
+                conn = sqlite3.connect('pescaderia.db')
+                cursor = conn.cursor()
+                # Buscar la producción
+                cursor.execute("SELECT id_produccion, nombre_produccion FROM tabla_producciones WHERE id_produccion = ?", (id_produccion,))
+                produccion = cursor.fetchone()
+                # Cerrar la conexión
+                conn.close()
+                if produccion:
+                    # Si se encuentra, actualizar el combobox
+                    self.entry_produccion_id.set(f"{produccion[0]} - {produccion[1]}")
+                    # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
+                    self.entry_arte_id.focus_set()
+                else:
+                    # Si no se encuentra, mostrar un mensaje de error
+                    messagebox.showerror("Error", f"No se encontró una producción con ID {id_produccion}")
+            except sqlite3.Error as e:
+                messagebox.showerror("Error de Base de Datos", f"No se pudo buscar la producción: {str(e)}")
+        else:
+            # Si la entrada no es un número, no hacer nada
+            pass
+
+    def filtrar_producciones(self, event):
+        """ Filtra las producciones en el combobox según el texto introducido. """
+        texto_filtro = self.entry_produccion_id.get()
+        self.actualizar_combobox_producciones(texto_filtro)
+
+#############################################################################################
+#############################################################################################
+########################        FUNCIONES ARTES      ########################################
+#############################################################################################
+#############################################################################################
+    def cargar_artes(self):
+        """ Carga los datos de las artes desde la base de datos y los muestra en el combobox. """
+        try:
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+            # Obtener todas las artes
+            cursor.execute("SELECT id_arte, nombre_arte FROM tabla_artes")
+            self.artes = cursor.fetchall()
+            # Cerrar la conexión
+            conn.close()
+            # Actualizar los valores del combobox
+            self.actualizar_combobox_artes()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar las artes: {str(e)}")
+
+    def actualizar_combobox_artes(self, filtro=""):
+        """ Actualiza los valores del combobox de artes, aplicando un filtro si se proporciona. """
+        valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.artes
+                            if filtro.lower() in nombre.lower() or filtro in str(id_)]
+        self.entry_arte_id['values'] = valores_filtrados
+
+    def buscar_arte(self, event):
+        """ Busca un arte por ID cuando se presiona Enter o Enter del teclado numérico.
+        Si se encuentra, completa el combobox y pasa al siguiente campo.
+        
+        Args:
+            event: El evento de teclado que activó esta función.
+        """
+        entrada = self.entry_arte_id.get()
+        # Verificar si la entrada es un número
+        if entrada.isdigit():
+            id_arte = int(entrada)
+            
+            try:
+                # Conectar a la base de datos
+                conn = sqlite3.connect('pescaderia.db')
+                cursor = conn.cursor()
+                # Buscar el arte
+                cursor.execute("SELECT id_arte, nombre_arte FROM tabla_artes WHERE id_arte = ?", (id_arte,))
+                arte = cursor.fetchone()
+                # Cerrar la conexión
+                conn.close()
+                if arte:
+                    # Si se encuentra, actualizar el combobox
+                    self.entry_arte_id.set(f"{arte[0]} - {arte[1]}")
+                    # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
+                    self.entry_metodo_id.focus_set()
+                else:
+                    # Si no se encuentra, mostrar un mensaje de error
+                    messagebox.showerror("Error", f"No se encontró un arte con ID {id_arte}")
+            except sqlite3.Error as e:
+                messagebox.showerror("Error de Base de Datos", f"No se pudo buscar el arte: {str(e)}")
+        else:
+            # Si la entrada no es un número, no hacer nada
+            pass
+
+    def filtrar_artes(self, event):
+        """ Filtra las artes en el combobox según el texto introducido. """
+        texto_filtro = self.entry_arte_id.get()
+        self.actualizar_combobox_artes(texto_filtro)
+
+#############################################################################################
+#############################################################################################
+########################        FUNCIONES METODOS      ######################################
+#############################################################################################
+#############################################################################################
+    def cargar_metodos(self):
+        """ Carga los datos de los métodos desde la base de datos y los muestra en el combobox. """
+        try:
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+            # Obtener todos los métodos
+            cursor.execute("SELECT id_metodo, nombre_metodo FROM tabla_metodos")
+            self.metodos = cursor.fetchall()
+            # Cerrar la conexión
+            conn.close()
+            # Actualizar los valores del combobox
+            self.actualizar_combobox_metodos()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar los métodos: {str(e)}")
+
+    def actualizar_combobox_metodos(self, filtro=""):
+        """ Actualiza los valores del combobox de métodos, aplicando un filtro si se proporciona. """
+        valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.metodos
+                            if filtro.lower() in nombre.lower() or filtro in str(id_)]
+        self.entry_metodo_id['values'] = valores_filtrados
+
+    def buscar_metodo(self, event):
+        """ Busca un método por ID cuando se presiona Enter o Enter del teclado numérico.
+        Si se encuentra, completa el combobox y pasa al siguiente campo.
+        
+        Args:
+            event: El evento de teclado que activó esta función.
+        """
+        entrada = self.entry_metodo_id.get()
+        # Verificar si la entrada es un número
+        if entrada.isdigit():
+            id_metodo = int(entrada)
+            
+            try:
+                # Conectar a la base de datos
+                conn = sqlite3.connect('pescaderia.db')
+                cursor = conn.cursor()
+                # Buscar el método
+                cursor.execute("SELECT id_metodo, nombre_metodo FROM tabla_metodos WHERE id_metodo = ?", (id_metodo,))
+                metodo = cursor.fetchone()
+                # Cerrar la conexión
+                conn.close()
+                if metodo:
+                    # Si se encuentra, actualizar el combobox
+                    self.entry_metodo_id.set(f"{metodo[0]} - {metodo[1]}")
+                    # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
+                    self.entry_presentacion_id.focus_set()
+                else:
+                    # Si no se encuentra, mostrar un mensaje de error
+                    messagebox.showerror("Error", f"No se encontró un método con ID {id_metodo}")
+            except sqlite3.Error as e:
+                messagebox.showerror("Error de Base de Datos", f"No se pudo buscar el método: {str(e)}")
+        else:
+            # Si la entrada no es un número, no hacer nada
+            pass
+
+    def filtrar_metodos(self, event):
+        """ Filtra los métodos en el combobox según el texto introducido. """
+        texto_filtro = self.entry_metodo_id.get()
+        self.actualizar_combobox_metodos(texto_filtro)
+
+#############################################################################################
+#############################################################################################
+########################        FUNCIONES PRESENTACIONES      ###############################
+#############################################################################################
+#############################################################################################
+    def cargar_presentaciones(self):
+        """ Carga los datos de las presentaciones desde la base de datos y los muestra en el combobox. """
+        try:
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+            # Obtener todas las presentaciones
+            cursor.execute("SELECT id_presentacion, nombre_presentacion FROM tabla_presentaciones")
+            self.presentaciones = cursor.fetchall()
+            # Cerrar la conexión
+            conn.close()
+            # Actualizar los valores del combobox
+            self.actualizar_combobox_presentaciones()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar las presentaciones: {str(e)}")
+
+    def actualizar_combobox_presentaciones(self, filtro=""):
+        """ Actualiza los valores del combobox de presentaciones, aplicando un filtro si se proporciona. """
+        valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.presentaciones
+                            if filtro.lower() in nombre.lower() or filtro in str(id_)]
+        self.entry_presentacion_id['values'] = valores_filtrados
+
+    def buscar_presentacion(self, event):
+        """ Busca una presentación por ID cuando se presiona Enter o Enter del teclado numérico.
+        Si se encuentra, completa el combobox y pasa al siguiente campo.
+        
+        Args:
+            event: El evento de teclado que activó esta función.
+        """
+        entrada = self.entry_presentacion_id.get()
+        # Verificar si la entrada es un número
+        if entrada.isdigit():
+            id_presentacion = int(entrada)
+            
+            try:
+                # Conectar a la base de datos
+                conn = sqlite3.connect('pescaderia.db')
+                cursor = conn.cursor()
+                # Buscar la presentación
+                cursor.execute("SELECT id_presentacion, nombre_presentacion FROM tabla_presentaciones WHERE id_presentacion = ?", (id_presentacion,))
+                presentacion = cursor.fetchone()
+                # Cerrar la conexión
+                conn.close()
+                if presentacion:
+                    # Si se encuentra, actualizar el combobox
+                    self.entry_presentacion_id.set(f"{presentacion[0]} - {presentacion[1]}")
+                    # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
+                    self.entry_barco_id.focus_set()
+                else:
+                    # Si no se encuentra, mostrar un mensaje de error
+                    messagebox.showerror("Error", f"No se encontró una presentación con ID {id_presentacion}")
+            except sqlite3.Error as e:
+                messagebox.showerror("Error de Base de Datos", f"No se pudo buscar la presentación: {str(e)}")
+        else:
+            # Si la entrada no es un número, no hacer nada
+            pass
+
+    def filtrar_presentaciones(self, event):
+        """ Filtra las presentaciones en el combobox según el texto introducido. """
+        texto_filtro = self.entry_presentacion_id.get()
+        self.actualizar_combobox_presentaciones(texto_filtro)
+
+#############################################################################################
+#############################################################################################
+########################        FUNCIONES BARCOS      #######################################
+#############################################################################################
+#############################################################################################
+    def cargar_barcos(self):
+        """ Carga los datos de los barcos desde la base de datos y los almacena en memoria. """
+        try:
+            # Conectar a la base de datos
+            conn = sqlite3.connect('pescaderia.db')
+            cursor = conn.cursor()
+            # Obtener todos los barcos
+            cursor.execute("SELECT id_barco, nombre_barco FROM tabla_barcos")
+            self.barcos = cursor.fetchall()
+            # Cerrar la conexión
+            conn.close()
+            # Actualizar los valores del combobox
+            self.actualizar_combobox_barcos()
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"No se pudieron cargar los barcos: {str(e)}")
+
+    def actualizar_combobox_barcos(self, filtro=""):
+        """ Actualiza los valores del combobox de barcos, aplicando un filtro si se proporciona. """
+        valores_filtrados = [f"{id_} - {nombre}" for id_, nombre in self.barcos
+                            if filtro.lower() in nombre.lower() or filtro in str(id_)]
+        self.entry_barco_id['values'] = valores_filtrados
+
+    def buscar_barco(self, event):
+        """ Busca un barco por ID cuando se presiona Enter o Enter del teclado numérico.
+        Si se encuentra, completa el combobox y pasa al siguiente campo.
+        
+        Args:
+            event: El evento de teclado que activó esta función.
+        """
+        entrada = self.entry_barco_id.get()
+        # Verificar si la entrada es un número
+        if entrada.isdigit():
+            id_barco = int(entrada)
+            
+            try:
+                # Conectar a la base de datos
+                conn = sqlite3.connect('pescaderia.db')
+                cursor = conn.cursor()
+                # Buscar el barco
+                cursor.execute("SELECT id_barco, nombre_barco FROM tabla_barcos WHERE id_barco = ?", (id_barco,))
+                barco = cursor.fetchone()
+                # Cerrar la conexión
+                conn.close()
+                if barco:
+                    # Si se encuentra, actualizar el combobox
+                    self.entry_barco_id.set(f"{barco[0]} - {barco[1]}")
+                    # Pasar al siguiente campo (en este caso, asumimos que es entry_factura)
+                    self.entry_descongelado.focus_set()
+                else:
+                    # Si no se encuentra, mostrar un mensaje de error
+                    messagebox.showerror("Error", f"No se encontró un barco con ID {id_barco}")
+            except sqlite3.Error as e:
+                messagebox.showerror("Error de Base de Datos", f"No se pudo buscar el barco: {str(e)}")
+        else:
+            # Si la entrada no es un número, no hacer nada
+            pass
+
+    def filtrar_barcos(self, event):
+        """ Filtra los barcos en el combobox según el texto introducido. """
+        texto_filtro = self.entry_barco_id.get()
+        self.actualizar_combobox_barcos(texto_filtro)
+
+
+
+
+
+
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = CrudDetalleListado(root)

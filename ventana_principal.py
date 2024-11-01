@@ -1,8 +1,3 @@
-'''
-Sistema de Gestión de Pescaderías
-CREADO EN MAYOR PARTE CON IA DE TECNOLOGÍA VERSEL V0
-24/10/2024 11:35 añado este comentario para comprobar los commit en GitHub
-'''
 import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
@@ -20,6 +15,8 @@ from crud_zonas import CrudZonas
 from crud_barcos import CrudBarcos
 from crud_usuarios import CrudUsuarios
 from crud_detalle_listado import CrudDetalleListado
+from crud_presentaciones import CrudPresentaciones
+from crud_familias import CrudFamilias
 from conexion_db import get_db_connection
 
 class VentanaPrincipal:
@@ -49,24 +46,43 @@ class VentanaPrincipal:
         self.label_bienvenida = tk.Label(self.frame_principal, text="Bienvenido al Sistema de Gestión de Pescaderías", font=('Arial', 16, 'bold'))
         self.label_bienvenida.pack(pady=20)
 
-        # Añadir botones rápidos
+        # Crear frame para los botones
         self.frame_botones = ttk.Frame(self.frame_principal)
         self.frame_botones.pack(pady=20)
 
-        botones = [
-            ("Gestionar Artes", self.abrir_crud_artes),
-            ("Gestionar Especies", self.abrir_crud_especies),
-            ("Gestionar Expedidores", self.abrir_crud_expedidores),
-            ("Gestionar Métodos", self.abrir_crud_metodos),
-            ("Gestionar Producciones", self.abrir_crud_producciones),
-            ("Gestionar Proveedores", self.abrir_crud_proveedores),
-            ("Gestionar Zonas", self.abrir_crud_zonas),
-            ("Gestionar Barcos", self.abrir_crud_barcos),
-            ("Gestionar Registros", self.abrir_crud_detalle_listado)
-        ]
+        # Crear botones individualmente y distribuirlos en 3 filas
+        self.btn_artes = ttk.Button(self.frame_botones, text="Gestionar Artes", command=self.abrir_crud_artes)
+        self.btn_artes.grid(row=0, column=0, padx=10, pady=5)
 
-        for i, (texto, comando) in enumerate(botones):
-            ttk.Button(self.frame_botones, text=texto, command=comando).grid(row=i//4, column=i%4, padx=10, pady=5)
+        self.btn_especies = ttk.Button(self.frame_botones, text="Gestionar Especies", command=self.abrir_crud_especies)
+        self.btn_especies.grid(row=0, column=1, padx=10, pady=5)
+
+        self.btn_expedidores = ttk.Button(self.frame_botones, text="Gestionar Expedidores", command=self.abrir_crud_expedidores)
+        self.btn_expedidores.grid(row=0, column=2, padx=10, pady=5)
+
+        self.btn_metodos = ttk.Button(self.frame_botones, text="Gestionar Métodos", command=self.abrir_crud_metodos)
+        self.btn_metodos.grid(row=1, column=0, padx=10, pady=5)
+
+        self.btn_producciones = ttk.Button(self.frame_botones, text="Gestionar Producciones", command=self.abrir_crud_producciones)
+        self.btn_producciones.grid(row=1, column=1, padx=10, pady=5)
+
+        self.btn_proveedores = ttk.Button(self.frame_botones, text="Gestionar Proveedores", command=self.abrir_crud_proveedores)
+        self.btn_proveedores.grid(row=1, column=2, padx=10, pady=5)
+
+        self.btn_zonas = ttk.Button(self.frame_botones, text="Gestionar Zonas", command=self.abrir_crud_zonas)
+        self.btn_zonas.grid(row=2, column=0, padx=10, pady=5)
+
+        self.btn_barcos = ttk.Button(self.frame_botones, text="Gestionar Barcos", command=self.abrir_crud_barcos)
+        self.btn_barcos.grid(row=2, column=1, padx=10, pady=5)
+
+        self.btn_registros = ttk.Button(self.frame_botones, text="Gestionar Registros", command=self.abrir_crud_detalle_listado)
+        self.btn_registros.grid(row=2, column=2, padx=10, pady=5)
+
+        self.btn_presentaciones = ttk.Button(self.frame_botones, text="Gestionar Presentaciones", command=self.abrir_crud_presentaciones)
+        self.btn_presentaciones.grid(row=3, column=0, padx=10, pady=5)
+
+        self.btn_familias = ttk.Button(self.frame_botones, text="Gestionar Familias", command=self.abrir_crud_familias)
+        self.btn_familias.grid(row=3, column=1, padx=10, pady=5)
 
         # Añadir botón de salir
         self.btn_salir = ttk.Button(self.frame_principal, text="Salir", command=self.salir)
@@ -108,6 +124,8 @@ class VentanaPrincipal:
         crud_menu.add_command(label="Proveedores", command=self.abrir_crud_proveedores)
         crud_menu.add_command(label="Zonas", command=self.abrir_crud_zonas)
         crud_menu.add_command(label="Barcos", command=self.abrir_crud_barcos)
+        crud_menu.add_command(label="Presentaciones", command=self.abrir_crud_presentaciones)
+        crud_menu.add_command(label="Familias", command=self.abrir_crud_familias)
         crud_menu.add_command(label="Usuarios", command=self.abrir_crud_usuarios)
 
     def abrir_crud_artes(self):
@@ -133,9 +151,15 @@ class VentanaPrincipal:
 
     def abrir_crud_barcos(self):
         CrudBarcos(self.master)
-    
+
     def abrir_crud_detalle_listado(self):
         CrudDetalleListado(self.master)
+
+    def abrir_crud_presentaciones(self):
+        CrudPresentaciones(self.master)
+
+    def abrir_crud_familias(self):
+        CrudFamilias(self.master)
 
     def abrir_crud_usuarios(self):
         if self.confirmar_credenciales():
