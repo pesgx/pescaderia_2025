@@ -4,6 +4,11 @@ from tkinter import messagebox
 from tkcalendar import DateEntry
 from datetime import datetime
 import sqlite3
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+from reportlab.platypus import Table, TableStyle
+from tkinter import filedialog
 
 class CrudDetalleListado(tk.Toplevel):
     def __init__(self, master):
@@ -195,10 +200,13 @@ class CrudDetalleListado(tk.Toplevel):
         self.btn_eliminar.grid(row=0, column=2, padx=5, pady=5)
         self.btn_eliminar.config(command=eliminar_registro_wrapper)
 
-        self.btn_salir = ttk.Button(self.frame_botones, text="SALIR")
-        self.btn_salir.grid(row=0, column=3, padx=5, pady=5)
-        self.btn_salir.config(command=self.master.destroy)
+        self.btn_pdf = ttk.Button(self.frame_botones, text="PDF")
+        self.btn_pdf.grid(row=0, column=3, padx=5, pady=5)
+        self.btn_pdf.config(command=self.generar_pdf_consulta)
 
+        self.btn_salir = ttk.Button(self.frame_botones, text="SALIR")
+        self.btn_salir.grid(row=0, column=4, padx=5, pady=5)
+        self.btn_salir.config(command=self.master.destroy)
         # Frame para el Treeview
         self.frame_treeview = ttk.LabelFrame(self.main_frame, text="Listado de Registros")
         self.frame_treeview.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
@@ -389,6 +397,70 @@ class CrudDetalleListado(tk.Toplevel):
                 if conn:
                     conn.close()
 
+    def generar_pdf_consulta(self):
+        # Ocultar la ventana principal de tkinter
+        self.withdraw()
+        
+        # Abrir diálogo para seleccionar ubicación y nombre de archivo
+        pdf_path = filedialog.asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf")],
+            title="Guardar archivo PDF"
+        )
+        
+        # Volver a mostrar la ventana principal si se cancela la operación
+        self.deiconify()
+        
+        if not pdf_path:
+            print("Operación cancelada por el usuario.")
+            return
+
+        # Conectar a la base de datos SQLite
+        conn = sqlite3.connect('pescaderia.db')
+        cursor = conn.cursor()
+
+        # Ejecutar la consulta para obtener solo las columnas especificadas de la vista
+        cursor.execute("SELECT fecha, especie, pvp, nota_int FROM consulta_detalle_listado")
+        registros = cursor.fetchall()
+
+        # Crear el archivo PDF con margen de 5 mm
+        c = canvas.Canvas(pdf_path, pagesize=A4)
+        c.setTitle("Consulta Detalle Listado")
+
+        # Crear una tabla con los datos específicos
+        data = [["Fecha", "Especie", "PVP (€)", "Nota Interna"]]  # Encabezados de las columnas
+
+        # Agregar filas de datos con formato
+        for row in registros:
+            fecha = row[0] or ""
+            especie = row[1] or ""
+            pvp = f"{row[2]:,.2f} €" if row[2] is not None else ""  # Formato de moneda
+            nota_int = row[3] or ""
+            data.append([fecha, especie, pvp, nota_int])
+
+        # Establecer el estilo de la tabla
+        table = Table(data, colWidths=[60, 150, 70, 200])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 1), (0, -1), 'CENTER'),       # Alineación de 'fecha' al centro
+            ('ALIGN', (1, 1), (1, -1), 'LEFT'),         # Alineación de 'nombre_especie' a la izquierda
+            ('ALIGN', (2, 1), (2, -1), 'RIGHT'),        # Alineación de 'pvp' a la derecha
+            ('ALIGN', (3, 1), (3, -1), 'CENTER'),       # Alineación de 'nota_int' al centro
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+        ]))
+
+        # Dibujar la tabla en el PDF, iniciando en la esquina superior izquierda con margen de 5 mm
+        table.wrapOn(c, 5, 5)
+        table.drawOn(c, 5, 780)  # Ajusta la posición vertical si es necesario
+
+        # Guardar y cerrar el PDF
+        c.save()
+        conn.close()
+        print(f"PDF generado exitosamente en {pdf_path}")
 #############################################################################################
 #############################################################################################
 ########################        METODOS CRUD     #####################################
@@ -565,6 +637,7 @@ class CrudDetalleListado(tk.Toplevel):
                 FROM tabla_detalle_listado dl
                 LEFT JOIN tabla_proveedores p ON dl.proveedor_id = p.id_proveedor
                 LEFT JOIN tabla_especies e ON dl.especie_id = e.id_especie
+                ORDER BY e.nombre_especie;
             """)
             registros = cursor.fetchall()
 
@@ -1230,6 +1303,7 @@ class CrudDetalleListado(tk.Toplevel):
         """ Filtra los barcos en el combobox según el texto introducido. """
         texto_filtro = self.entry_barco_id.get()
         self.actualizar_combobox_barcos(texto_filtro)
+
 
 
 

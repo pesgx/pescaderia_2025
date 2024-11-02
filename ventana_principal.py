@@ -159,6 +159,7 @@ class VentanaPrincipal:
 
     def abrir_crud_detalle_listado(self):
         CrudDetalleListado(self.master)
+        self.master.withdraw()  # Oculta la ventana principal
 
     def abrir_crud_presentaciones(self):
         CrudPresentaciones(self.master)
