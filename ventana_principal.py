@@ -23,7 +23,7 @@ class VentanaPrincipal:
     def __init__(self, master=None):
         self.master = master or tk.Tk()
         self.master.title("Sistema de Gestión de Pescaderías")
-        self.master.geometry("1000x800")
+        self.master.geometry("800x600")
         
         # Crear un estilo para los botones 
         estilo = ttk.Style()
@@ -35,7 +35,7 @@ class VentanaPrincipal:
 
         # Crear un frame principal
         self.frame_principal = ttk.Frame(self.master)
-        self.frame_principal.pack(expand=True, fill="both", padx=20, pady=20)
+        self.frame_principal.pack(expand=True, fill="both", padx=5, pady=5)
 
         # Cargar y mostrar la imagen
         self.cargar_imagen()
@@ -49,11 +49,11 @@ class VentanaPrincipal:
 
         # Añadir texto de bienvenida
         self.label_bienvenida = tk.Label(self.frame_principal, text="Bienvenido al Sistema de Gestión de Pescaderías", font=('Arial', 16, 'bold'))
-        self.label_bienvenida.pack(pady=20)
+        self.label_bienvenida.pack(pady=5)
 
         # Crear frame para los botones
         self.frame_botones = ttk.Frame(self.frame_principal)
-        self.frame_botones.pack(pady=20)
+        self.frame_botones.pack(pady=5)
 
         # Crear botones individualmente y distribuirlos en 3 filas
         self.btn_artes = ttk.Button(self.frame_botones, text="Gestionar Artes", command=self.abrir_crud_artes)
@@ -99,10 +99,10 @@ class VentanaPrincipal:
     def cargar_imagen(self):
         try:
             imagen = Image.open("logo_pes_png.png")
-            imagen = imagen.resize((200, 200))  # Ajusta el tamaño según sea necesario
+            imagen = imagen.resize((100, 100))  # Ajusta el tamaño según sea necesario
             self.logo = ImageTk.PhotoImage(imagen)
             label_imagen = tk.Label(self.frame_principal, image=self.logo)
-            label_imagen.pack(pady=20)
+            label_imagen.pack(pady=5)
         except FileNotFoundError:
             print("No se pudo encontrar el archivo de imagen 'logo_pes.jpg'")
 
