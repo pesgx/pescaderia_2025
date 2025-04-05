@@ -2,3 +2,20 @@
 .vscode
 __pycache__/
 *.py[cod]
+*.code-workspace
+# Ignorar entornos virtuales
+venv/
+
+# Ignorar archivos de configuración de IDE
+.vscode/
+*.code-workspace
+
+# Ignorar archivos temporales
+*.pyc
+__pycache__/
+
+# Ignorar archivos de logs
+*.log
+
+# Ignorar archivos de base de datos
+*.sqlite3

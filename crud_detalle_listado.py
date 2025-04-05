@@ -13,6 +13,7 @@ from tkinter import filedialog
 class CrudDetalleListado(tk.Toplevel):
     def __init__(self, master):
         super().__init__(master)
+        self.bind('<F2>', self.seleccionar_primera_linea)
         
         # Configuración básica de la ventana
         self.title("Gestión de Detalle de Listado")
@@ -266,6 +267,22 @@ class CrudDetalleListado(tk.Toplevel):
 ########################        OTROS METODOS     ###########################################
 #############################################################################################
 #############################################################################################
+
+    def seleccionar_primera_linea(self, event=None):
+        """
+        Selecciona la primera línea del Treeview.
+        """
+        if self.tree.get_children():
+            primera_linea = self.tree.get_children()[0]
+            self.tree.selection_set(primera_linea)
+            self.tree.focus(primera_linea)
+            self.tree.see(primera_linea)
+
+    # Vincular la tecla F2 al evento
+
+
+
+
     def limpiar_campos(self):
             """
             Limpia todos los campos del formulario.
