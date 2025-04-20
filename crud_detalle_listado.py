@@ -207,7 +207,8 @@ class CrudDetalleListado(tk.Toplevel):
 
         self.btn_salir = ttk.Button(self.frame_botones, text="SALIR")
         self.btn_salir.grid(row=0, column=4, padx=5, pady=5)
-        self.btn_salir.config(command=self.master.destroy)
+        self.btn_salir.config(command=self.volver_a_ventana_principal)
+
         # Frame para el Treeview
         self.frame_treeview = ttk.LabelFrame(self.main_frame, text="Listado de Registros")
         self.frame_treeview.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
@@ -267,7 +268,14 @@ class CrudDetalleListado(tk.Toplevel):
 ########################        OTROS METODOS     ###########################################
 #############################################################################################
 #############################################################################################
-
+    
+    def volver_a_ventana_principal(self):
+        """
+        Oculta la ventana actual y vuelve a mostrar la ventana principal.
+        """
+        self.destroy()  # Cierra la ventana actual
+        self.master.deiconify()  # Muestra la ventana principal
+    
     def seleccionar_primera_linea(self, event=None):
         """
         Selecciona la primera línea del Treeview.

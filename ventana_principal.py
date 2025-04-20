@@ -216,7 +216,7 @@ class VentanaPrincipal:
 
     def salir(self):
         if messagebox.askyesno("Confirmar salida", "¿Está seguro que desea salir de la aplicación?"):
-            self.master.quit()
+            self.master.destroy()
 
 if __name__ == "__main__":
     app = VentanaPrincipal()
