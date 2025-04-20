@@ -211,6 +211,10 @@ class CrudDetalleListado(tk.Toplevel):
         self.btn_salir.grid(row=0, column=4, padx=5, pady=5)
         self.btn_salir.config(command=self.volver_a_ventana_principal)
 
+        lbl_label_opcines = ttk.Label(self.frame_botones, text="F2: Seleccionar primera línea tabla")
+        lbl_label_opcines.grid(row=1, column=0, padx=5, pady=5)
+        lbl_label_opcines.config(foreground="blue")
+
         # Frame para el Treeview
         self.frame_treeview = ttk.LabelFrame(self.main_frame, text="Listado de Registros")
         self.frame_treeview.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
@@ -265,6 +269,7 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_metodo_id.bind('<Return>',self.buscar_metodo)
         self.entry_presentacion_id.bind('<Return>',self.buscar_presentacion)
         self.entry_barco_id.bind('<Return>',self.buscar_barco)
+
 #############################################################################################
 #############################################################################################
 ########################        OTROS METODOS     ###########################################
