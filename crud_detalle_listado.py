@@ -9,6 +9,8 @@ from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 from tkinter import filedialog
+from generar_pdf import generar_pdf_consulta  # Importar la función desde el nuevo módulo
+
 
 class CrudDetalleListado(tk.Toplevel):
     def __init__(self, master):
@@ -203,7 +205,7 @@ class CrudDetalleListado(tk.Toplevel):
 
         self.btn_pdf = ttk.Button(self.frame_botones, text="PDF")
         self.btn_pdf.grid(row=0, column=3, padx=5, pady=5)
-        self.btn_pdf.config(command=self.generar_pdf_consulta)
+        self.btn_pdf.config(command=generar_pdf_consulta)  # Vincular al módulo externo
 
         self.btn_salir = ttk.Button(self.frame_botones, text="SALIR")
         self.btn_salir.grid(row=0, column=4, padx=5, pady=5)
