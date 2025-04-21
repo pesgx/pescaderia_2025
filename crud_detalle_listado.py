@@ -71,31 +71,45 @@ class CrudDetalleListado(tk.Toplevel):
         ttk.Label(self.frame_linea_uno, text="Compra (€):").grid(row=0, column=4, padx=5, pady=5, sticky='e')
         self.entry_compra = ttk.Entry(self.frame_linea_uno)
         self.entry_compra.grid(row=0, column=5, padx=5, pady=5, sticky='w')
+        self.entry_compra.bind('<FocusOut>', self.validar_y_calcular)
+
 
         ttk.Label(self.frame_linea_uno, text="Cantidad:").grid(row=1, column=4, padx=5, pady=5, sticky='e')
-        self.entry_cantidad = ttk.Entry(self.frame_linea_uno)
+        self.entry_cantidad = ttk.Entry(self.frame_linea_uno,)
         self.entry_cantidad.grid(row=1, column=5, padx=5, pady=5, sticky='w')
+        self.entry_cantidad.bind('<FocusOut>', self.validar_y_calcular)
+ 
 
         ttk.Label(self.frame_linea_uno, text="IVA (%):").grid(row=2, column=4, padx=5, pady=5, sticky='e')
         self.entry_iva = ttk.Entry(self.frame_linea_uno)
         self.entry_iva.grid(row=2, column=5, padx=5, pady=5, sticky='w')
+        self.entry_iva.bind('<FocusOut>', self.validar_y_calcular)
+ 
 
         # Columna 4
         ttk.Label(self.frame_linea_uno, text="Costo (€):").grid(row=0, column=6, padx=5, pady=5, sticky='e')
         self.entry_costo = ttk.Entry(self.frame_linea_uno)
         self.entry_costo.grid(row=0, column=7, padx=5, pady=5, sticky='w')
+        # DESACTIVAMOS PARA QUE NO SE PUEDA MODIFICAR
+        self.entry_costo.config(state='disabled')
 
         ttk.Label(self.frame_linea_uno, text="Porcentaje:").grid(row=1, column=6, padx=5, pady=5, sticky='e')
         self.entry_porcentaje = ttk.Entry(self.frame_linea_uno)
         self.entry_porcentaje.grid(row=1, column=7, padx=5, pady=5, sticky='w')
+        self.entry_porcentaje.bind('<FocusOut>', self.validar_y_calcular)
+
 
         ttk.Label(self.frame_linea_uno, text="Beneficio (€):").grid(row=2, column=6, padx=5, pady=5, sticky='e')
         self.entry_beneficio = ttk.Entry(self.frame_linea_uno)
         self.entry_beneficio.grid(row=2, column=7, padx=5, pady=5, sticky='w')
+        # DESACTIVAMOS PARA QUE NO SE PUEDA MODIFICAR
+        self.entry_beneficio.config(state='disabled')
 
         ttk.Label(self.frame_linea_uno, text="PVP (€):").grid(row=3, column=6, padx=5, pady=5, sticky='e')
         self.entry_pvp = ttk.Entry(self.frame_linea_uno)
         self.entry_pvp.grid(row=3, column=7, padx=5, pady=5, sticky='w')
+        # DESACTIVAMOS PARA QUE NO SE PUEDA MODIFICAR
+        self.entry_pvp.config(state='disabled')
 
         # Campos en frame_linea_dos (4 columnas)
         # Columna 1
@@ -275,7 +289,59 @@ class CrudDetalleListado(tk.Toplevel):
 ########################        OTROS METODOS     ###########################################
 #############################################################################################
 #############################################################################################
-    
+    def validar_y_calcular(self, event=None):
+        """
+        Valida los valores de los campos y calcula automáticamente los valores de costo, beneficio y PVP.
+        Si los valores no son numéricos, muestra un mensaje de error y borra el campo.
+        """
+        try:
+            # Validar que los campos no estén vacíos y contengan valores numéricos
+            compra = self.entry_compra.get()
+            cantidad = self.entry_cantidad.get()
+            iva = self.entry_iva.get()
+            porcentaje = self.entry_porcentaje.get()
+
+            if not compra or not cantidad or not iva or not porcentaje:
+                return  # No hacer nada si algún campo está vacío
+
+            # Intentar convertir los valores a float
+            compra = float(compra)
+            cantidad = float(cantidad)
+            iva = float(iva)
+            porcentaje = float(porcentaje)
+
+            # Validar que cantidad no sea cero para evitar división por cero
+            if cantidad == 0:
+                raise ValueError("La cantidad no puede ser cero.")
+
+            # Realizar cálculos
+            costo = (compra / cantidad) * (1 + iva / 100)
+            beneficio = costo * (porcentaje / 100)
+            pvp = costo + beneficio
+
+            # Actualizar los campos calculados
+            self.entry_costo.config(state='normal')
+            self.entry_costo.delete(0, tk.END)
+            self.entry_costo.insert(0, f"{costo:.2f}")
+            self.entry_costo.config(state='disabled')
+
+            self.entry_beneficio.config(state='normal')
+            self.entry_beneficio.delete(0, tk.END)
+            self.entry_beneficio.insert(0, f"{beneficio:.2f}")
+            self.entry_beneficio.config(state='disabled')
+
+            self.entry_pvp.config(state='normal')
+            self.entry_pvp.delete(0, tk.END)
+            self.entry_pvp.insert(0, f"{pvp:.2f}")
+            self.entry_pvp.config(state='disabled')
+
+        except ValueError:
+            # Si ocurre un error, mostrar mensaje y borrar el campo que generó el evento
+            messagebox.showerror("Error", "Por favor, ingrese valores numéricos válidos.")
+            widget = event.widget  # Obtener el widget que generó el evento
+            widget.delete(0, tk.END)
+
+
     def volver_a_ventana_principal(self):
         """
         Oculta la ventana actual y vuelve a mostrar la ventana principal.

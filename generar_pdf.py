@@ -25,7 +25,7 @@ def generar_pdf_consulta():
         cursor = conn.cursor()
 
         # Obtener los registros de la vista 'consulta_detalle_listado'
-        cursor.execute("SELECT fecha, especie, pvp, nota_int FROM consulta_detalle_listado")
+        cursor.execute("SELECT fecha, especie, pvp, nota_int FROM consulta_detalle_listado ORDER BY especie")
         registros = cursor.fetchall()
 
         # Crear el archivo PDF
@@ -39,7 +39,7 @@ def generar_pdf_consulta():
 
         # Título del PDF
         c.setFont("Helvetica-Bold", 12)
-        c.drawString(margen_izquierdo, height - margen_superior, "Listado de especies")
+        c.drawString(margen_izquierdo, height - margen_superior, "")
 
         # Crear la tabla con los datos
         data = [["Fecha", "Especie", "PVP (€)", "Nota Interna"]]  # Encabezados
@@ -57,7 +57,7 @@ def generar_pdf_consulta():
             data.append([fecha, especie, pvp, nota_int])
 
         # Estilo de la tabla
-        table = Table(data, colWidths=[50, 100, 50, 150])
+        table = Table(data, colWidths=[80, 120, 70, 150])
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
