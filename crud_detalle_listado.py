@@ -15,7 +15,10 @@ from generar_pdf import generar_pdf_consulta  # Importar la función desde el nu
 class CrudDetalleListado(tk.Toplevel):
     def __init__(self, master):
         super().__init__(master)
+
+        # botones de función especial
         self.bind('<F2>', self.seleccionar_primera_linea)
+        self.bind('<F3>', self.actualizar_registro)
         
         # Configuración básica de la ventana
         self.title("Gestión de Detalle de Listado")
@@ -600,7 +603,7 @@ class CrudDetalleListado(tk.Toplevel):
             if conn:
                 conn.close()
 
-    def actualizar_registro(self):
+    def actualizar_registro(self,event=None):
         """
         Actualiza un registro existente en la tabla_detalle_listado.
         """
@@ -638,6 +641,9 @@ class CrudDetalleListado(tk.Toplevel):
 
             # Actualizar el treeview
             self.cargar_registros()
+            self.limpiar_campos()
+            self.seleccionar_primera_linea()
+            
 
         except sqlite3.Error as e:
             messagebox.showerror("Error de Base de Datos", f"No se pudo actualizar el registro: {str(e)}")
