@@ -356,15 +356,13 @@ class CrudDetalleListado(tk.Toplevel):
         """
         Selecciona la primera línea del Treeview.
         """
+    # Vincular la tecla F2 al evento        
         if self.tree.get_children():
             primera_linea = self.tree.get_children()[0]
             self.tree.selection_set(primera_linea)
             self.tree.focus(primera_linea)
             self.tree.see(primera_linea)
-
-    # Vincular la tecla F2 al evento
-
-
+            self.tree.focus_set()  # Asegura que el foco permanezca en el Treeview
 
 
     def limpiar_campos(self):
