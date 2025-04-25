@@ -81,13 +81,13 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_cantidad = ttk.Entry(self.frame_linea_uno,)
         self.entry_cantidad.grid(row=1, column=5, padx=5, pady=5, sticky='w')
         self.entry_cantidad.bind('<FocusOut>', self.validar_y_calcular)
- 
+
 
         ttk.Label(self.frame_linea_uno, text="IVA (%):").grid(row=2, column=4, padx=5, pady=5, sticky='e')
         self.entry_iva = ttk.Entry(self.frame_linea_uno)
         self.entry_iva.grid(row=2, column=5, padx=5, pady=5, sticky='w')
         self.entry_iva.bind('<FocusOut>', self.validar_y_calcular)
- 
+
 
         # Columna 4
         ttk.Label(self.frame_linea_uno, text="Costo (€):").grid(row=0, column=6, padx=5, pady=5, sticky='e')
@@ -95,6 +95,7 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_costo.grid(row=0, column=7, padx=5, pady=5, sticky='w')
         # DESACTIVAMOS PARA QUE NO SE PUEDA MODIFICAR
         self.entry_costo.config(state='disabled')
+
 
         ttk.Label(self.frame_linea_uno, text="Porcentaje:").grid(row=1, column=6, padx=5, pady=5, sticky='e')
         self.entry_porcentaje = ttk.Entry(self.frame_linea_uno)
@@ -108,11 +109,13 @@ class CrudDetalleListado(tk.Toplevel):
         # DESACTIVAMOS PARA QUE NO SE PUEDA MODIFICAR
         self.entry_beneficio.config(state='disabled')
 
+
         ttk.Label(self.frame_linea_uno, text="PVP (€):").grid(row=3, column=6, padx=5, pady=5, sticky='e')
         self.entry_pvp = ttk.Entry(self.frame_linea_uno)
         self.entry_pvp.grid(row=3, column=7, padx=5, pady=5, sticky='w')
         # DESACTIVAMOS PARA QUE NO SE PUEDA MODIFICAR
         self.entry_pvp.config(state='disabled')
+
 
         # Campos en frame_linea_dos (4 columnas)
         # Columna 1
@@ -123,12 +126,14 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_zona_id.bind('<KP_Enter>', self.buscar_zona)
         self.entry_zona_id.bind('<KeyRelease>', self.filtrar_zonas)
 
+
         ttk.Label(self.frame_linea_dos, text="Expedidor:").grid(row=1, column=0, padx=5, pady=5, sticky='e')
         self.entry_expedidor_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_expedidor_id.grid(row=1, column=1, padx=5, pady=5, sticky='w')
         self.entry_expedidor_id.bind('<Return>', self.buscar_expedidor)
         self.entry_expedidor_id.bind('<KP_Enter>', self.buscar_expedidor)
         self.entry_expedidor_id.bind('<KeyRelease>', self.filtrar_expedidores)
+
 
         # Columna 2
         ttk.Label(self.frame_linea_dos, text="Producción:").grid(row=0, column=2, padx=5, pady=5, sticky='e')
@@ -138,12 +143,14 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_produccion_id.bind('<KP_Enter>', self.buscar_produccion)
         self.entry_produccion_id.bind('<KeyRelease>', self.filtrar_producciones)
 
+
         ttk.Label(self.frame_linea_dos, text="Arte:").grid(row=1, column=2, padx=5, pady=5, sticky='e')
         self.entry_arte_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_arte_id.grid(row=1, column=3, padx=5, pady=5, sticky='w')
         self.entry_arte_id.bind('<Return>', self.buscar_arte)
         self.entry_arte_id.bind('<KP_Enter>', self.buscar_arte)
         self.entry_arte_id.bind('<KeyRelease>', self.filtrar_artes)
+
 
         # Columna 3
         ttk.Label(self.frame_linea_dos, text="Método:").grid(row=0, column=4, padx=5, pady=5, sticky='e')
@@ -153,12 +160,14 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_metodo_id.bind('<KP_Enter>', self.buscar_metodo)
         self.entry_metodo_id.bind('<KeyRelease>', self.filtrar_metodos)
 
+
         ttk.Label(self.frame_linea_dos, text="Presentación:").grid(row=1, column=4, padx=5, pady=5, sticky='e')
         self.entry_presentacion_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_presentacion_id.grid(row=1, column=5, padx=5, pady=5, sticky='w')
         self.entry_presentacion_id.bind('<Return>', self.buscar_presentacion)
         self.entry_presentacion_id.bind('<KP_Enter>', self.buscar_presentacion)
         self.entry_presentacion_id.bind('<KeyRelease>', self.filtrar_presentaciones)
+
 
         # Columna 4
         ttk.Label(self.frame_linea_dos, text="Barco:").grid(row=0, column=6, padx=5, pady=5, sticky='e')
@@ -168,30 +177,37 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_barco_id.bind('<KP_Enter>', self.buscar_barco)
         self.entry_barco_id.bind('<KeyRelease>', self.filtrar_barcos)
 
+
         ttk.Label(self.frame_linea_dos, text="Descongelado:").grid(row=1, column=6, padx=5, pady=5, sticky='e')
         self.entry_descongelado = ttk.Checkbutton(self.frame_linea_dos)
         self.entry_descongelado.grid(row=1, column=7, padx=5, pady=5, sticky='w')
+
 
         # Campos adicionales
         ttk.Label(self.frame_linea_dos, text="Lote Externo:").grid(row=2, column=0, padx=5, pady=5, sticky='e')
         self.entry_lote_ext = ttk.Entry(self.frame_linea_dos)
         self.entry_lote_ext.grid(row=2, column=1, padx=5, pady=5, sticky='w')
 
+
         ttk.Label(self.frame_linea_dos, text="Lote Interno:").grid(row=2, column=2, padx=5, pady=5, sticky='e')
         self.entry_lote_int = ttk.Entry(self.frame_linea_dos)
         self.entry_lote_int.grid(row=2, column=3, padx=5, pady=5, sticky='w')
+
 
         ttk.Label(self.frame_linea_dos, text="Nota Externa:").grid(row=2, column=4, padx=5, pady=5, sticky='e')
         self.entry_nota_ext = ttk.Entry(self.frame_linea_dos)
         self.entry_nota_ext.grid(row=2, column=5, padx=5, pady=5, sticky='w')
 
+
         ttk.Label(self.frame_linea_dos, text="Nota Interna:").grid(row=2, column=6, padx=5, pady=5, sticky='e')
         self.entry_nota_int = ttk.Entry(self.frame_linea_dos)
         self.entry_nota_int.grid(row=2, column=7, padx=5, pady=5, sticky='w')
 
+
         ttk.Label(self.frame_linea_dos, text="Reg. Congelado:").grid(row=3, column=0, padx=5, pady=5, sticky='e')
         self.entry_reg_congelado = ttk.Checkbutton(self.frame_linea_dos)
         self.entry_reg_congelado.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+
 
         # Frame para botones CRUD
         self.frame_botones = ttk.LabelFrame(self.main_frame, text="Operaciones")
@@ -200,45 +216,57 @@ class CrudDetalleListado(tk.Toplevel):
             self.anadir_registro()
             self.limpiar_campos()
 
+
         def actualizar_registro_wrapper():
             self.actualizar_registro()
             self.limpiar_campos()
 
+
         def eliminar_registro_wrapper():
             self.eliminar_registro()
             self.limpiar_campos()
+
+
         # Botones CRUD
         self.btn_anadir = ttk.Button(self.frame_botones, text="AÑADIR")
         self.btn_anadir.grid(row=0, column=0, padx=5, pady=5)
         self.btn_anadir.config(command=anadir_registro_wrapper)
 
+
         self.btn_actualizar = ttk.Button(self.frame_botones, text="ACTUALIZAR")
         self.btn_actualizar.grid(row=0, column=1, padx=5, pady=5)
         self.btn_actualizar.config(command=actualizar_registro_wrapper)
+
 
         self.btn_eliminar = ttk.Button(self.frame_botones, text="ELIMINAR")
         self.btn_eliminar.grid(row=0, column=2, padx=5, pady=5)
         self.btn_eliminar.config(command=eliminar_registro_wrapper)
 
+
         self.btn_pdf = ttk.Button(self.frame_botones, text="PDF")
         self.btn_pdf.grid(row=0, column=3, padx=5, pady=5)
         self.btn_pdf.config(command=generar_pdf_consulta)  # Vincular al módulo externo
+
 
         self.btn_salir = ttk.Button(self.frame_botones, text="SALIR")
         self.btn_salir.grid(row=0, column=4, padx=5, pady=5)
         self.btn_salir.config(command=self.volver_a_ventana_principal)
 
+
         lbl_label_opcines = ttk.Label(self.frame_botones, text="F2: Seleccionar primera línea tabla")
         lbl_label_opcines.grid(row=1, column=0, padx=5, pady=5)
         lbl_label_opcines.config(foreground="blue")
+
 
         # Frame para el Treeview
         self.frame_treeview = ttk.LabelFrame(self.main_frame, text="Listado de Registros")
         self.frame_treeview.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
+
         # Configuración del Treeview
         columnas = ("id_detalle", "fecha", "proveedor", "especie", "pvp", "nota_int")
         self.tree = ttk.Treeview(self.frame_treeview, columns=columnas, show='headings')
+
 
         # Configurar las columnas
         self.tree.heading("id_detalle", text="ID")
@@ -247,6 +275,7 @@ class CrudDetalleListado(tk.Toplevel):
         self.tree.heading("especie", text="Especie")
         self.tree.heading("pvp", text="PVP")
         self.tree.heading("nota_int", text="Nota Interna")
+
 
         # Ajustar el ancho de las columnas
         self.tree.column("id_detalle", width=50)
@@ -257,13 +286,17 @@ class CrudDetalleListado(tk.Toplevel):
         
         self.tree.column("nota_int", width=200)
 
+
         # Añadir scrollbar
         scrollbar = ttk.Scrollbar(self.frame_treeview, orient=tk.VERTICAL, command=self.tree.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
+
         self.tree.configure(yscrollcommand=scrollbar.set)
         self.tree.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         self.tree.bind('<<TreeviewSelect>>', self.seleccionar_registro)       
+
+
         # Cargar datos de COMBOBOX
         self.cargar_proveedores()
         self.cargar_especies()
@@ -274,8 +307,12 @@ class CrudDetalleListado(tk.Toplevel):
         self.cargar_metodos()
         self.cargar_presentaciones()
         self.cargar_barcos()
+
+
         # Cargar los registros iniciales
         self.cargar_registros()
+
+
         # Eventos de teclado
         self.entry_proveedor_id.bind('<Return>', self.buscar_proveedor)
         self.entry_especie_id.bind('<Return>', self.buscar_especie)
@@ -287,11 +324,49 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_presentacion_id.bind('<Return>',self.buscar_presentacion)
         self.entry_barco_id.bind('<Return>',self.buscar_barco)
 
+
+        # Vincular el evento <KP_Enter> a los campos de entrada
+        ''' se añade el evento <KP_Enter> para que al presionar la tecla Enter del teclado numérico,'''
+        self.entry_id_detalle.bind('<KP_Enter>', self.mover_foco)
+        self.entry_listado_id.bind('<KP_Enter>', self.mover_foco)
+        self.entry_fecha.bind('<KP_Enter>', self.mover_foco)
+        self.entry_proveedor_id.bind('<KP_Enter>', self.mover_foco)
+        self.entry_factura.bind('<KP_Enter>', self.mover_foco)
+        self.entry_especie_id.bind('<KP_Enter>', self.mover_foco)
+        self.entry_compra.bind('<KP_Enter>', self.mover_foco)
+        self.entry_cantidad.bind('<KP_Enter>', self.mover_foco)
+        self.entry_iva.bind('<KP_Enter>', self.mover_foco)
+        self.entry_porcentaje.bind('<KP_Enter>', self.mover_foco)
+        self.entry_zona_id.bind('<KP_Enter>', self.mover_foco)
+        self.entry_expedidor_id.bind('<KP_Enter>', self.mover_foco)
+        self.entry_produccion_id.bind('<KP_Enter>', self.mover_foco)
+        self.entry_arte_id.bind('<KP_Enter>', self.mover_foco)
+        self.entry_metodo_id.bind('<KP_Enter>', self.mover_foco)
+        self.entry_presentacion_id.bind('<KP_Enter>', self.mover_foco)
+        self.entry_barco_id.bind('<KP_Enter>', self.mover_foco)
+        self.entry_lote_ext.bind('<KP_Enter>', self.mover_foco)
+        self.entry_lote_int.bind('<KP_Enter>', self.mover_foco)
+        self.entry_nota_ext.bind('<KP_Enter>', self.mover_foco)
+        self.entry_nota_int.bind('<KP_Enter>', self.mover_foco)
+        # Vincular el evento <Return> y <KP_Enter> a los Checkbutton
+        self.entry_descongelado.bind('<Return>', self.mover_foco)
+        self.entry_descongelado.bind('<KP_Enter>', self.mover_foco)
+
+        self.entry_reg_congelado.bind('<Return>', self.mover_foco)
+        self.entry_reg_congelado.bind('<KP_Enter>', self.mover_foco)
+
 #############################################################################################
 #############################################################################################
 ########################        OTROS METODOS     ###########################################
 #############################################################################################
 #############################################################################################
+    def mover_foco(self, event):
+        """
+        Mueve el foco al siguiente widget cuando se presiona la tecla Intro del teclado numérico.
+        """
+        event.widget.tk_focusNext().focus_set()
+        return "break"  # Evita que el evento se propague
+
     def validar_y_calcular(self, event=None):
         """
         Valida los valores de los campos y calcula automáticamente los valores de costo, beneficio y PVP.
