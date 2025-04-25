@@ -22,11 +22,11 @@ class CrudDetalleListado(tk.Toplevel):
         
         # Configuración básica de la ventana
         self.title("Gestión de Detalle de Listado")
-        self.geometry("1200x850")
+        self.geometry("1200x900")
 
         # Frame principal
         self.main_frame = ttk.Frame(self)
-        self.main_frame.pack(padx=20, pady=20, fill=tk.BOTH, expand=True)
+        self.main_frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
         # Frame línea uno (datos principales)
         self.frame_linea_uno = ttk.LabelFrame(self.main_frame, text="Datos Principales")
@@ -54,8 +54,8 @@ class CrudDetalleListado(tk.Toplevel):
         ttk.Label(self.frame_linea_uno, text="Proveedor:").grid(row=0, column=2, padx=5, pady=5, sticky='e')
         self.entry_proveedor_id = ttk.Combobox(self.frame_linea_uno)
         self.entry_proveedor_id.grid(row=0, column=3, padx=5, pady=5, sticky='w')
-        self.entry_proveedor_id.bind('<Return>', self.buscar_proveedor)
-        self.entry_proveedor_id.bind('<KP_Enter>', self.buscar_proveedor)
+        self.entry_proveedor_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_proveedor_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
         self.entry_proveedor_id.bind('<KeyRelease>', self.filtrar_proveedores)
 
 
@@ -66,8 +66,8 @@ class CrudDetalleListado(tk.Toplevel):
         ttk.Label(self.frame_linea_uno, text="Especie:").grid(row=2, column=2, padx=5, pady=5, sticky='e')
         self.entry_especie_id = ttk.Combobox(self.frame_linea_uno)
         self.entry_especie_id.grid(row=2, column=3, padx=5, pady=5, sticky='w')
-        self.entry_especie_id.bind('<Return>', self.buscar_especie)
-        self.entry_especie_id.bind('<KP_Enter>', self.buscar_especie)
+        self.entry_especie_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_especie_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
         self.entry_especie_id.bind('<KeyRelease>', self.filtrar_especies)
 
         # Columna 3
@@ -122,16 +122,16 @@ class CrudDetalleListado(tk.Toplevel):
         ttk.Label(self.frame_linea_dos, text="Zona:").grid(row=0, column=0, padx=5, pady=5, sticky='e')
         self.entry_zona_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_zona_id.grid(row=0, column=1, padx=5, pady=5, sticky='w')
-        self.entry_zona_id.bind('<Return>', self.buscar_zona)
-        self.entry_zona_id.bind('<KP_Enter>', self.buscar_zona)
+        self.entry_zona_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_zona_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
         self.entry_zona_id.bind('<KeyRelease>', self.filtrar_zonas)
 
 
         ttk.Label(self.frame_linea_dos, text="Expedidor:").grid(row=1, column=0, padx=5, pady=5, sticky='e')
         self.entry_expedidor_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_expedidor_id.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-        self.entry_expedidor_id.bind('<Return>', self.buscar_expedidor)
-        self.entry_expedidor_id.bind('<KP_Enter>', self.buscar_expedidor)
+        self.entry_expedidor_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_expedidor_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
         self.entry_expedidor_id.bind('<KeyRelease>', self.filtrar_expedidores)
 
 
@@ -139,16 +139,16 @@ class CrudDetalleListado(tk.Toplevel):
         ttk.Label(self.frame_linea_dos, text="Producción:").grid(row=0, column=2, padx=5, pady=5, sticky='e')
         self.entry_produccion_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_produccion_id.grid(row=0, column=3, padx=5, pady=5, sticky='w')
-        self.entry_produccion_id.bind('<Return>', self.buscar_produccion)
-        self.entry_produccion_id.bind('<KP_Enter>', self.buscar_produccion)
+        self.entry_produccion_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_produccion_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
         self.entry_produccion_id.bind('<KeyRelease>', self.filtrar_producciones)
 
 
         ttk.Label(self.frame_linea_dos, text="Arte:").grid(row=1, column=2, padx=5, pady=5, sticky='e')
         self.entry_arte_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_arte_id.grid(row=1, column=3, padx=5, pady=5, sticky='w')
-        self.entry_arte_id.bind('<Return>', self.buscar_arte)
-        self.entry_arte_id.bind('<KP_Enter>', self.buscar_arte)
+        self.entry_arte_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_arte_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
         self.entry_arte_id.bind('<KeyRelease>', self.filtrar_artes)
 
 
@@ -156,16 +156,16 @@ class CrudDetalleListado(tk.Toplevel):
         ttk.Label(self.frame_linea_dos, text="Método:").grid(row=0, column=4, padx=5, pady=5, sticky='e')
         self.entry_metodo_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_metodo_id.grid(row=0, column=5, padx=5, pady=5, sticky='w')
-        self.entry_metodo_id.bind('<Return>', self.buscar_metodo)
-        self.entry_metodo_id.bind('<KP_Enter>', self.buscar_metodo)
+        self.entry_metodo_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_metodo_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
         self.entry_metodo_id.bind('<KeyRelease>', self.filtrar_metodos)
 
 
         ttk.Label(self.frame_linea_dos, text="Presentación:").grid(row=1, column=4, padx=5, pady=5, sticky='e')
         self.entry_presentacion_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_presentacion_id.grid(row=1, column=5, padx=5, pady=5, sticky='w')
-        self.entry_presentacion_id.bind('<Return>', self.buscar_presentacion)
-        self.entry_presentacion_id.bind('<KP_Enter>', self.buscar_presentacion)
+        self.entry_presentacion_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_presentacion_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
         self.entry_presentacion_id.bind('<KeyRelease>', self.filtrar_presentaciones)
 
 
@@ -174,8 +174,8 @@ class CrudDetalleListado(tk.Toplevel):
         self.entry_barco_id = ttk.Combobox(self.frame_linea_dos)
         self.entry_barco_id.grid(row=0, column=7, padx=5, pady=5, sticky='w')
         self.entry_barco_id.bind('<Return>', self.buscar_barco)
-        self.entry_barco_id.bind('<KP_Enter>', self.buscar_barco)
-        self.entry_barco_id.bind('<KeyRelease>', self.filtrar_barcos)
+        self.entry_barco_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_barco_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
 
 
         ttk.Label(self.frame_linea_dos, text="Descongelado:").grid(row=1, column=6, padx=5, pady=5, sticky='e')
@@ -253,7 +253,7 @@ class CrudDetalleListado(tk.Toplevel):
         self.btn_salir.config(command=self.volver_a_ventana_principal)
 
 
-        lbl_label_opcines = ttk.Label(self.frame_botones, text="F2: Seleccionar primera línea tabla")
+        lbl_label_opcines = ttk.Label(self.frame_botones, text="F2: Seleccionar primera línea tabla - F3: Actualizar registro" )
         lbl_label_opcines.grid(row=1, column=0, padx=5, pady=5)
         lbl_label_opcines.config(foreground="blue")
 
@@ -313,59 +313,133 @@ class CrudDetalleListado(tk.Toplevel):
         self.cargar_registros()
 
 
-        # Eventos de teclado
-        self.entry_proveedor_id.bind('<Return>', self.buscar_proveedor)
-        self.entry_especie_id.bind('<Return>', self.buscar_especie)
-        self.entry_zona_id.bind('<Return>', self.buscar_zona)
-        self.entry_expedidor_id.bind('<Return>', self.buscar_expedidor)
-        self.entry_produccion_id.bind('<Return>', self.buscar_produccion)
-        self.entry_arte_id.bind('<Return>',self.buscar_arte)
-        self.entry_metodo_id.bind('<Return>',self.buscar_metodo)
-        self.entry_presentacion_id.bind('<Return>',self.buscar_presentacion)
-        self.entry_barco_id.bind('<Return>',self.buscar_barco)
+        # Eventos de teclado para Combobox y Entry
+        self.entry_proveedor_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_especie_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_zona_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_expedidor_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_produccion_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_arte_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_metodo_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_presentacion_id.bind('<Return>', self.buscar_y_mover_foco)
+        self.entry_barco_id.bind('<Return>', self.buscar_y_mover_foco)
 
+        # Vincular el evento <KP_Enter> a los mismos widgets
+        self.entry_proveedor_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
+        self.entry_especie_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
+        self.entry_zona_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
+        self.entry_expedidor_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
+        self.entry_produccion_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
+        self.entry_arte_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
+        self.entry_metodo_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
+        self.entry_presentacion_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
+        self.entry_barco_id.bind('<KP_Enter>', self.buscar_y_mover_foco)
 
-        # Vincular el evento <KP_Enter> a los campos de entrada
-        ''' se añade el evento <KP_Enter> para que al presionar la tecla Enter del teclado numérico,'''
+        # Otros widgets (Entry)
         self.entry_id_detalle.bind('<KP_Enter>', self.mover_foco)
         self.entry_listado_id.bind('<KP_Enter>', self.mover_foco)
         self.entry_fecha.bind('<KP_Enter>', self.mover_foco)
-        self.entry_proveedor_id.bind('<KP_Enter>', self.mover_foco)
         self.entry_factura.bind('<KP_Enter>', self.mover_foco)
-        self.entry_especie_id.bind('<KP_Enter>', self.mover_foco)
         self.entry_compra.bind('<KP_Enter>', self.mover_foco)
         self.entry_cantidad.bind('<KP_Enter>', self.mover_foco)
         self.entry_iva.bind('<KP_Enter>', self.mover_foco)
         self.entry_porcentaje.bind('<KP_Enter>', self.mover_foco)
-        self.entry_zona_id.bind('<KP_Enter>', self.mover_foco)
-        self.entry_expedidor_id.bind('<KP_Enter>', self.mover_foco)
-        self.entry_produccion_id.bind('<KP_Enter>', self.mover_foco)
-        self.entry_arte_id.bind('<KP_Enter>', self.mover_foco)
-        self.entry_metodo_id.bind('<KP_Enter>', self.mover_foco)
-        self.entry_presentacion_id.bind('<KP_Enter>', self.mover_foco)
-        self.entry_barco_id.bind('<KP_Enter>', self.mover_foco)
         self.entry_lote_ext.bind('<KP_Enter>', self.mover_foco)
         self.entry_lote_int.bind('<KP_Enter>', self.mover_foco)
         self.entry_nota_ext.bind('<KP_Enter>', self.mover_foco)
         self.entry_nota_int.bind('<KP_Enter>', self.mover_foco)
-        # Vincular el evento <Return> y <KP_Enter> a los Checkbutton
-        self.entry_descongelado.bind('<Return>', self.mover_foco)
-        self.entry_descongelado.bind('<KP_Enter>', self.mover_foco)
 
-        self.entry_reg_congelado.bind('<Return>', self.mover_foco)
-        self.entry_reg_congelado.bind('<KP_Enter>', self.mover_foco)
+        # Vincular eventos a los Entry
+        entries = [
+            self.entry_id_detalle, self.entry_listado_id, self.entry_fecha, self.entry_factura,
+            self.entry_compra, self.entry_cantidad, self.entry_iva, self.entry_porcentaje,
+            self.entry_lote_ext, self.entry_lote_int, self.entry_nota_ext, self.entry_nota_int
+        ]
+
+        for entry in entries:
+            entry.bind('<Return>', self.mover_foco_y_seleccionar)
+            entry.bind('<KP_Enter>', self.mover_foco_y_seleccionar)
+            entry.bind('<FocusIn>', self.seleccionar_todo_texto)
+
+        # Vincular eventos a los Combobox
+        comboboxes = [
+            self.entry_proveedor_id, self.entry_especie_id, self.entry_zona_id, self.entry_expedidor_id,
+            self.entry_produccion_id, self.entry_arte_id, self.entry_metodo_id, self.entry_presentacion_id,
+            self.entry_barco_id
+        ]
+
+        for combobox in comboboxes:
+            combobox.bind('<Return>', self.buscar_y_mover_foco)
+            combobox.bind('<KP_Enter>', self.buscar_y_mover_foco)
+            combobox.bind('<FocusIn>', self.seleccionar_todo_texto)
+
+        # Vincular eventos a los Checkbutton
+        checkbuttons = [self.entry_descongelado, self.entry_reg_congelado]
+
+        for checkbutton in checkbuttons:
+            checkbutton.bind('<Return>', self.mover_foco_y_seleccionar)
+            checkbutton.bind('<KP_Enter>', self.mover_foco_y_seleccionar)
 
 #############################################################################################
 #############################################################################################
 ########################        OTROS METODOS     ###########################################
 #############################################################################################
 #############################################################################################
+    def buscar_y_mover_foco(self, event):
+        """
+        Detecta en qué Combobox está el foco, ejecuta su función de búsqueda correspondiente
+        y luego mueve el foco al siguiente widget.
+        """
+        widget = event.widget
+
+        # Verificar en qué Combobox está el foco y ejecutar la función de búsqueda correspondiente
+        if widget == self.entry_proveedor_id:
+            self.buscar_proveedor(event)
+        elif widget == self.entry_especie_id:
+            self.buscar_especie(event)
+        elif widget == self.entry_zona_id:
+            self.buscar_zona(event)
+        elif widget == self.entry_expedidor_id:
+            self.buscar_expedidor(event)
+        elif widget == self.entry_produccion_id:
+            self.buscar_produccion(event)
+        elif widget == self.entry_arte_id:
+            self.buscar_arte(event)
+        elif widget == self.entry_metodo_id:
+            self.buscar_metodo(event)
+        elif widget == self.entry_presentacion_id:
+            self.buscar_presentacion(event)
+        elif widget == self.entry_barco_id:
+            self.buscar_barco(event)
+
+        # Mover el foco al siguiente widget
+        self.mover_foco(event)
+
+
     def mover_foco(self, event):
         """
         Mueve el foco al siguiente widget cuando se presiona la tecla Intro del teclado numérico.
+        Al entrar en el siguiente campo, selecciona todo el texto.
         """
-        event.widget.tk_focusNext().focus_set()
-        return "break"  # Evita que el evento se propague
+        siguiente_widget = event.widget.tk_focusNext()
+        siguiente_widget.focus_set()  # Mueve el foco al siguiente widget
+
+        # Seleccionar todo el texto si el siguiente widget es un campo de entrada o combobox
+        if isinstance(siguiente_widget, (ttk.Entry, ttk.Combobox)):
+            siguiente_widget.select_range(0, tk.END)  # Selecciona todo el texto
+            siguiente_widget.icursor(tk.END)  # Coloca el cursor al final del texto
+
+        # Permitir que otros eventos vinculados al widget se ejecuten
+        return None  # No detener la propagación del evento
+
+    def seleccionar_todo_texto(self, event):
+        """
+        Selecciona todo el texto del widget cuando recibe el foco.
+        """
+        widget = event.widget
+        if isinstance(widget, (ttk.Entry, ttk.Combobox)):
+            widget.select_range(0, tk.END)  # Selecciona todo el texto
+            widget.icursor(tk.END)  # Coloca el cursor al final del texto
 
     def validar_y_calcular(self, event=None):
         """
@@ -1014,7 +1088,7 @@ class CrudDetalleListado(tk.Toplevel):
 
 #############################################################################################
 #############################################################################################
-########################        FUNCIONES ZONAS      #####################################
+########################        FUNCIONES ZONAS      ############################################
 #############################################################################################
 #############################################################################################
     def cargar_zonas(self):
